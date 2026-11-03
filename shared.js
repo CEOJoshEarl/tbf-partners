@@ -67,3 +67,23 @@ function submitLead(kind, ref, data, token) {
   return fetch(SB_URL + '/functions/v1/submit', { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: SB_KEY, Authorization: 'Bearer ' + (token || SB_KEY) }, body: JSON.stringify(Object.assign({}, data, { kind: kind, ref: ref })) })
     .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok) { var e = new Error(j.error || 'That did not send. Please call us.'); e.status = r.status; throw e; } return j; }); });
 }
+/* One deal's funding, worked out the same way for team and client. Inquiries: every hard pull counts, approved or denied. */
+function fundingSummary(apps, payments, feePct) {
+  var pct = feePct == null ? 10 : +feePct, nums = {}, rounds;
+  (apps || []).forEach(function (a) { nums[a.round] = 1; });
+  (payments || []).forEach(function (p) { nums[p.round] = 1; });
+  function inq(list) { var c = { EX: 0, EQ: 0, TU: 0 }; list.forEach(function (a) { if (a.pull_type !== 'soft') (a.bureaus || []).forEach(function (b) { if (c[b] != null) c[b]++; }); }); return c; }
+  function acc(a) { return a.status === 'approved' && (a.client_decision || a.decision) === 'accepted'; }
+  function und(a) { return a.status === 'approved' && !(a.client_decision || a.decision); }
+  rounds = Object.keys(nums).map(Number).sort(function (a, b) { return a - b; }).map(function (n) {
+    var list = (apps || []).filter(function (a) { return a.round === n; }), pay = (payments || []).filter(function (p) { return p.round === n; })[0] || null;
+    var approved = list.filter(function (a) { return a.status === 'approved'; }).reduce(function (t, a) { return t + (+a.approved_amt || 0); }, 0);
+    var accepted = list.filter(acc).reduce(function (t, a) { return t + (+a.approved_amt || 0); }, 0);
+    return { round: n, apps: list, approved: approved, accepted: accepted, waiting: list.filter(und).length, inquiries: inq(list), fee: Math.round(accepted * pct) / 100, paid: pay };
+  });
+  return { rounds: rounds, approved: rounds.reduce(function (t, r) { return t + r.approved; }, 0), accepted: rounds.reduce(function (t, r) { return t + r.accepted; }, 0), inquiries: inq(apps || []), waiting: rounds.reduce(function (t, r) { return t + r.waiting; }, 0), pct: pct };
+}
+function clientApi(body, token) {
+  return fetch(SB_URL + '/functions/v1/client', { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: SB_KEY, Authorization: 'Bearer ' + (token || SB_KEY) }, body: JSON.stringify(body) })
+    .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok) { var e = new Error(j.error || 'That did not go through. Please call us.'); e.status = r.status; throw e; } return j; }); });
+}

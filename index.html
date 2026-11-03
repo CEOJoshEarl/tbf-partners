@@ -278,7 +278,7 @@
   function daysAgo(n) { var d = new Date(); d.setDate(d.getDate() - n); return d.toISOString(); }
   function sampleState() {
     function deal(id, company, first, last, product, stage, age, extra) {
-      return Object.assign({ id: id, created: daysAgo(age), first: first, last: last, email: first.toLowerCase() + '@example.com', phone: '(555) 010-' + (1000 + id), company: company, score: '680 - 719', industry: 'Construction', tib: '3 Years', sales: '$360,000 - $1,000,000', product: product, partnerId: '', refId: '', stage: stage, lossReason: '', items: [], notes: [], fundedAmt: 0, fundedDate: '', commission: 0, via: '' }, extra || {});
+      return Object.assign({ id: id, created: daysAgo(age), first: first, last: last, email: first.toLowerCase() + '@example.com', phone: '(555) 010-' + (1000 + id), company: company, score: '680 - 719', industry: 'Construction', tib: '3 Years', sales: '$30,000 - $85,000', product: product, partnerId: '', refId: '', stage: stage, lossReason: '', items: [], notes: [], fundedAmt: 0, fundedDate: '', commission: 0, via: '' }, extra || {});
     }
     return {
       sample: true, team: false, site: defaultSite(), done: [], news: [{ at: daysAgo(3), text: 'Credit Card Stacking is now available as a product on new leads.' }],
@@ -560,7 +560,7 @@
       + (d.items.length ? '<section class="form-sec"><h3>What we need</h3><div class="todo">' + d.items.map(function (it, i) { return '<label class="tick"><input type="checkbox" data-item="' + i + '"' + (it.done ? ' checked' : '') + '><span' + (it.done ? ' style="text-decoration:line-through;color:var(--muted)"' : '') + '>' + esc(it.text) + '</span></label>'; }).join('') + '</div></section>' : '')
       + team
       + '<section class="form-sec"><h3>Contact</h3><div class="kv"><div><span>Name</span><b>' + esc(d.first + ' ' + d.last) + '</b></div><div><span>Phone</span><b>' + esc(d.phone) + '</b></div><div style="grid-column:1/-1"><span>Email</span><b>' + esc(d.email) + '</b></div></div></section>'
-      + '<section class="form-sec"><h3>Business</h3><div class="kv"><div><span>Annual sales</span><b>' + esc(d.sales) + '</b></div><div><span>Time in business</span><b>' + esc(d.tib || '–') + '</b></div><div><span>Credit score</span><b>' + esc(d.score || '–') + '</b></div><div><span>Industry</span><b>' + esc(d.industry || '–') + '</b></div><div><span>Sent</span><b>' + date(d.created) + '</b></div>' + (d.refId ? '<div><span>Your reference</span><b>' + esc(d.refId) + '</b></div>' : '') + '</div></section>'
+      + '<section class="form-sec"><h3>Business</h3><div class="kv"><div><span>Monthly sales</span><b>' + esc(d.sales) + '</b></div><div><span>Time in business</span><b>' + esc(d.tib || '–') + '</b></div><div><span>Credit score</span><b>' + esc(d.score || '–') + '</b></div><div><span>Industry</span><b>' + esc(d.industry || '–') + '</b></div><div><span>Sent</span><b>' + date(d.created) + '</b></div>' + (d.refId ? '<div><span>Your reference</span><b>' + esc(d.refId) + '</b></div>' : '') + '</div></section>'
       + '<section class="form-sec"><h3>Notes</h3><form data-form="add-note" style="display:flex;gap:8px"><div class="field" style="flex:1"><label for="n-text" style="position:absolute;left:-9999px">Add a note</label><input id="n-text" name="text" placeholder="Add a note for our team"></div><button class="btn" style="height:50px">Add</button></form>'
       + d.notes.slice().reverse().map(function (n) { return '<div class="note">' + esc(n.text) + '<small>' + esc(n.by) + ' · ' + date(n.at) + '</small></div>'; }).join('') + '</section>'
       + '</div>';
@@ -581,7 +581,7 @@
       + '</div><div class="note-warn" id="dupe" hidden></div></div>'
       + '<div class="form-sec"><h3>What do they need?</h3><div class="fields">'
       + '<div class="field full"><label for="f-product">Product requested</label><select id="f-product" name="product">' + options(PRODUCTS.map(function (p) { return p.name; }), pre.product || 'Unsure, please advise') + '</select></div>'
-      + sel('sales', 'Annual sales', SALES, true, pre.sales) + sel('score', 'Credit score', SCORES, false, pre.score) + sel('tib', 'Time in business', TIB, false, pre.tib)
+      + sel('sales', 'Monthly sales', SALES, true, pre.sales) + sel('score', 'Credit score', SCORES, false, pre.score) + sel('tib', 'Time in business', TIB, false, pre.tib)
       + '<div class="field"><label for="f-industry">Industry</label><input id="f-industry" name="industry" list="industries" placeholder="Start typing"><datalist id="industries">' + INDUSTRIES.map(function (i) { return '<option value="' + esc(i) + '">'; }).join('') + '</datalist></div>'
       + '</div></div>'
       + '<div class="form-sec"><div class="field"><label for="f-note">Anything we should know?</label><textarea id="f-note" name="note" placeholder="Best time to call, what the money is for, how you know them"></textarea></div>'
@@ -888,8 +888,8 @@
       + (res && !res.length ? '<section class="card result"><h2>Nothing clears the minimums yet</h2><p>These answers fall short of the products we checked. Our team may still see an option, so you can send the lead anyway.</p><button class="btn primary" style="align-self:flex-start" data-act="qualify-to-lead">' + icon('plus') + 'Send this as a lead</button></section>' : res ? '<section class="card result"><h2>Worth talking through</h2><ul style="margin:0;padding:0;display:flex;flex-direction:column;gap:10px">' + res.map(function (o) { return '<li><b style="color:var(--ink)">' + esc(o.name) + '</b><br><span style="color:var(--muted)">' + esc(o.why) + '</span></li>'; }).join('') + '</ul><p class="note-warn">This is a starting point, not an approval. Our team makes the final call.</p><button class="btn primary" style="align-self:flex-start" data-act="qualify-to-lead">' + icon('plus') + 'Send this as a lead</button></section>' : '');
   }
   function qualifierToLead() {
-    var a = ui.qualifier, year = a.monthly * 12;
-    var sales = year < 50000 ? 0 : year < 120000 ? 1 : year < 360000 ? 2 : year < 1000000 ? 3 : year < 1800000 ? 4 : year < 3000000 ? 5 : year < 6000000 ? 6 : year < 10000000 ? 7 : 8;
+    var a = ui.qualifier, mo = a.monthly;
+    var sales = mo < 5000 ? 0 : mo < 10000 ? 1 : mo < 30000 ? 2 : mo < 85000 ? 3 : mo < 150000 ? 4 : mo < 250000 ? 5 : mo < 500000 ? 6 : mo < 850000 ? 7 : 8;
     var score = a.score >= 720 ? 0 : a.score >= 680 ? 1 : a.score >= 650 ? 2 : a.score >= 600 ? 3 : 4;
     var tib = a.years < 1 ? 0 : a.years >= 10 ? 10 : Math.floor(a.years);
     openLead({ sales: SALES[sales], score: SCORES[score], tib: TIB[tib], product: (suggest(a)[0] || { name: 'Unsure, please advise' }).name });

@@ -79,7 +79,8 @@ function fundingSummary(apps, payments, feePct) {
     var list = (apps || []).filter(function (a) { return a.round === n; }), pay = (payments || []).filter(function (p) { return p.round === n; })[0] || null;
     var approved = list.filter(function (a) { return a.status === 'approved'; }).reduce(function (t, a) { return t + (+a.approved_amt || 0); }, 0);
     var accepted = list.filter(acc).reduce(function (t, a) { return t + (+a.approved_amt || 0); }, 0);
-    return { round: n, apps: list, approved: approved, accepted: accepted, waiting: list.filter(und).length, inquiries: inq(list), fee: Math.round(accepted * pct) / 100, paid: pay };
+    var stamps = list.filter(acc).map(function (a) { return a.approved_at ? new Date(a.approved_at).getTime() : 0; }).filter(Boolean);
+    return { round: n, apps: list, approved: approved, accepted: accepted, waiting: list.filter(und).length, inquiries: inq(list), fee: Math.round(accepted * pct) / 100, paid: pay, dueBy: stamps.length ? new Date(Math.max.apply(null, stamps) + 10 * 864e5).toISOString() : '' };
   });
   return { rounds: rounds, approved: rounds.reduce(function (t, r) { return t + r.approved; }, 0), accepted: rounds.reduce(function (t, r) { return t + r.accepted; }, 0), inquiries: inq(apps || []), waiting: rounds.reduce(function (t, r) { return t + r.waiting; }, 0), pct: pct };
 }

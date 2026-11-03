@@ -118,7 +118,7 @@
         return '<section class="card"><div class="head"><h2>Round ' + r.round + '</h2><b style="color:var(--ink)">' + money(r.accepted) + ' accepted</b></div><div>' + r.apps.map(function (a) {
           return '<div class="row"><div><b style="color:var(--ink)">' + esc(a.lender) + '</b><small>' + esc(a.product || '') + (a.product ? ' · ' : '') + esc(bureauLine(a)) + '</small></div><div class="right">' + (a.status === 'approved' ? '<b>' + money(a.approved_amt) + '</b>' : '') + pill(a) + '</div></div>';
         }).join('') + '</div>'
-          + (r.fee > 0 ? '<div class="fee"><span>Fee for this round (' + F.pct + '%): <b style="color:var(--ink)">' + money(r.fee) + '</b>' + (r.paid ? '' : '<br><small class="muted">Due before round ' + next + ' begins.</small>') + '</span>' + (r.paid ? '<span class="pill good">Paid</span>' : '<span class="pill warn">Due</span>') + '</div>' : '') + '</section>';
+          + (r.fee > 0 ? '<div class="fee"><span>Fee for this round (' + F.pct + '%): <b style="color:var(--ink)">' + money(r.fee) + '</b>' + (r.paid ? '' : '<br><small class="muted">Due when your card arrives or your loan is deposited' + (r.dueBy ? ', and no later than ' + new Date(r.dueBy).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ', and no later than 10 days after approval') + '. Pay by your payment link, Zelle, Cash App or Venmo. Round ' + next + ' begins once we receive it.</small>') + '</span>' + (r.paid ? '<span class="pill good">Paid</span>' : '<span class="pill warn">Due</span>') + '</div>' : '') + '</section>';
       }).join('')
       + '<section class="card"><h2>Credit inquiries so far</h2><p class="muted">Counted from every hard pull in your file, approved or denied.</p><div class="tiles">' + ['EX', 'EQ', 'TU'].map(function (b) { return '<div class="tile"><span>' + BUREAU[b] + '</span><b>' + F.inquiries[b] + '</b></div>'; }).join('') + '</div></section>'
       : '<section class="card"><h2>Applications</h2><p class="muted">Nothing submitted yet. Each lender will show up here as soon as we apply.</p></section>');
@@ -128,12 +128,18 @@
       if (r.error) throw r.error;
       var data = r.data || [], s = JSON.stringify(data);
       if (s === last) return; last = s;
+      if (!data.length) return sb.auth.getUser().then(function (u) { return sb.from('partners').select('id').eq('id', u.data.user.id).maybeSingle(); }).then(function (m) { if (m.data) location.replace('index.html'); else show(data); });
+      show(data);
+    });
+  }
+  function show(data) {
+    {
       document.getElementById('top').hidden = false;
       var name = data[0] && data[0].first ? ', ' + esc(data[0].first) : '';
       app.innerHTML = '<div><h1>Welcome back' + name + '</h1></div>' + (data.length ? data.map(dealHtml).join('') : '<section class="card"><h2>No funding file found</h2><p>We could not find a file under this login. Please call ' + PHONE + ' and we will sort it out.</p></section>')
         + '<p class="muted">Questions? Call ' + PHONE + ' or email partnership@thebusinessfunders.com, Monday to Friday, 10am to 5pm EST.</p>';
       logos();
-    });
+    }
   }
   function enter() { return load().catch(function () { showLogin('We could not load your file. Please try again.'); }); }
 
@@ -158,7 +164,7 @@
     }
   });
   setInterval(function () { if (!document.hidden && !document.getElementById('login') && !document.getElementById('setup') && !document.getElementById('code')) sb.auth.getSession().then(function (r) { if (r.data.session) load().catch(function () {}); }); }, 30000);
-  sb.auth.getSession().then(function (r) { if (r.data.session) return enter(); showLogin(); }).catch(function () { showLogin(); });
+  sb.auth.getSession().then(function (r) { if (r.data.session) return enter(); if (location.hash === '#setup') showSetup(); else showLogin(); }).catch(function () { showLogin(); });
 })();
 </script>
 </body>

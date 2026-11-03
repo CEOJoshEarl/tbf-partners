@@ -385,7 +385,7 @@
       + (recovery ? '' : '<div class="field"><label for="l-email">Email</label><input id="l-email" name="email" type="email" autocomplete="username" required></div>')
       + '<div class="field"><label for="l-pass">Password</label><input id="l-pass" name="password" type="password" autocomplete="' + (recovery ? 'new-password' : 'current-password') + '" required></div>'
       + '<p class="login-err" id="l-err"' + (msg ? '' : ' hidden') + '>' + esc(msg || '') + '</p><button class="btn primary">' + (recovery ? 'Save password' : 'Log in') + '</button>'
-      + (recovery ? '' : '<button type="button" class="link-btn" data-act="forgot">Forgot your password?</button><p style="color:var(--muted)">Not a partner yet? <a href="site.html?page=partner">Join the program</a></p>')
+      + (recovery ? '' : '<button type="button" class="link-btn" data-act="forgot">Forgot your password?</button><p style="color:var(--muted)">Not a partner yet? <a href="site.html?page=partner">Join the program</a></p><p style="color:var(--muted)">On our team and setting up your login? <a href="client.html#setup">Set your password</a></p>')
       + '</form></div>';
     box.querySelectorAll('img[data-logo]').forEach(function (i) { i.src = LOGO; });
   }
@@ -614,7 +614,7 @@
       + F.rounds.map(function (r) {
         return '<div class="round-box"><div class="card-head" style="margin:0"><b>Round ' + r.round + '</b><span style="color:var(--muted);font-size:14px">Approved ' + money(r.approved) + ' · Accepted ' + money(r.accepted) + '</span></div>'
           + r.apps.map(function (a) { return '<button class="app-row" data-act="app-edit" data-id="' + a.id + '"><span><b>' + esc(a.lender) + '</b><small>' + esc(a.product || '') + (a.product ? ' · ' : '') + esc(bureauLine(a)) + '</small></span><span class="app-right"><b>' + (a.status === 'approved' ? money(a.approved_amt) : '') + '</b>' + statusPill(a) + '</span></button>'; }).join('')
-          + '<div class="round-fee"><span>Fee on accepted (' + F.pct + '%): <b>' + money(r.fee) + '</b></span>' + (r.paid ? '<span class="pill good">Paid ' + money(r.paid.amount) + '</span><button class="btn small" data-act="round-unpay" data-v="' + r.round + '">Undo</button>' : (r.fee > 0 ? '<button class="btn small primary" data-act="round-pay" data-v="' + r.round + '" data-id="' + r.fee + '">Mark paid</button>' : '')) + '</div></div>';
+          + '<div class="round-fee"><span>Fee on accepted (' + F.pct + '%): <b>' + money(r.fee) + '</b></span>' + (r.paid ? '<span class="pill good">Paid ' + money(r.paid.amount) + '</span><button class="btn small" data-act="round-unpay" data-v="' + r.round + '">Undo</button>' : (r.fee > 0 ? (r.dueBy ? '<span class="pill ' + (new Date(r.dueBy) < new Date() ? 'bad">Past due since ' : 'warn">Due by ') + date(r.dueBy) + '</span>' : '') + '<button class="btn small primary" data-act="round-pay" data-v="' + r.round + '" data-id="' + r.fee + '">Mark paid</button>' : '')) + '</div></div>';
       }).join('')
       + '<div class="fields"><div class="field"><label for="t-fee">Fee %, this client</label><input id="t-fee" inputmode="decimal" data-fund="fee_pct" value="' + esc(d.feePct) + '"></div><div class="field"><label for="t-cnote">Message the client sees</label><input id="t-cnote" data-fund="client_note" value="' + esc(d.clientNote || '') + '"></div></div></section>';
   }
@@ -652,7 +652,7 @@
     if (f.reset && f.reset.checked) { rec.client_decision = null; rec.decided_at = null; }
     /* Fees are due before the next round starts. */
     var owed = fundingSummary(dealApps(d), dealPays(d), d.feePct).rounds.filter(function (r) { return r.round < rec.round && r.fee > 0 && !r.paid; })[0];
-    if (!was && owed && !window.confirm('The ' + money(owed.fee) + ' fee for round ' + owed.round + ' has not been marked paid. It is due before round ' + rec.round + ' begins. Add this application anyway?')) return;
+    if (!was && owed && !window.confirm('The ' + money(owed.fee) + ' fee for round ' + owed.round + ' has not been marked paid. The next round starts once it is paid. Add this application to round ' + rec.round + ' anyway?')) return;
     var newOffer = rec.status === 'approved' && (!was || was.status !== 'approved');
     function done() { return reloadFunding().then(function () { $('#modal').close(); renderDeal(d); toast('Saved'); if (LIVE && newOffer) token().then(function (t) { return clientApi({ action: 'notify_offer', deal: d.id }, t); }).catch(function () {}); }); }
     if (!LIVE) { if (was) Object.assign(was, rec); else state.apps.push(Object.assign({ id: nextId(state.apps), client_decision: null }, rec)); return done(); }

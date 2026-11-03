@@ -445,7 +445,7 @@
       }).join('') + '</section>'
       + '<section class="card"><div class="card-head"><h2>Leads you sent, last 8 weeks</h2></div><div class="chart" id="chart"></div></section>'
       + '</div><div class="stack">'
-      + levelCard() + newsCard() + '<section class="card"><div class="card-head"><h2>Needs your help</h2></div>' + (attention.length ? '<div class="attn">' + attention.map(function (d) {
+      + packageCard() + levelCard() + newsCard() + '<section class="card"><div class="card-head"><h2>Needs your help</h2></div>' + (attention.length ? '<div class="attn">' + attention.map(function (d) {
         return '<button data-act="open-deal" data-id="' + d.id + '"><span class="dot"></span><span><b>' + esc(d.company) + '</b><small>' + esc(openItems(d)[0].text) + (openItems(d).length > 1 ? ' and ' + (openItems(d).length - 1) + ' more' : '') + '</small></span></button>';
       }).join('') + '</div>' : '<p style="color:var(--muted)">Nothing right now. When our team needs something on a deal, it shows up here.</p>') + '</section>'
       + '<section class="card"><div class="card-head"><h2>Your links</h2></div>' + linkRow('Send business owners here', L.biz, 'l-biz') + linkRow('Invite other partners here', L.partner, 'l-partner') + '</section>'
@@ -457,6 +457,14 @@
     function count(d0) { return state.deals.filter(function (d) { if (d.via || d.stage !== 10 || !d.fundedDate) return false; var f = new Date(d.fundedDate); return f.getFullYear() === d0.getFullYear() && f.getMonth() === d0.getMonth(); }).length; }
     var last = count(prev), cur = count(now);
     return { last: last, cur: cur, rate: last >= 10 ? 40 : 20, nextRate: cur >= 10 ? 40 : 20, lastName: prev.toLocaleDateString('en-US', { month: 'long' }), curName: now.toLocaleDateString('en-US', { month: 'long' }) };
+  }
+  function packageDone() { try { return localStorage.getItem('tbf-package-done') === '1'; } catch (e) { return false; } }
+  function packageCard() {
+    if (state.team || packageDone()) return '';
+    return '<section class="card form-sec"><div class="card-head" style="margin:0"><h2>Sign your Partner Package</h2><span class="pill warn">Needed to get paid</span></div>'
+      + '<p>We emailed it to you when you signed up. It has your agreement and W-9, and we need it signed before we can pay you.</p>'
+      + '<p style="color:var(--muted);font-size:15px">Don\'t see it? Check your spam folder or call 1-888-994-4548.</p>'
+      + '<button class="btn small" data-act="package-done" style="align-self:flex-start">I signed it</button></section>';
   }
   function levelCard() {
     var L = levelInfo(), left = Math.max(0, 10 - L.cur), pct = Math.min(100, L.cur * 10);
@@ -914,6 +922,7 @@
     else if (act === 'open-deal') openDeal(id);
     else if (act === 'open-partner') openPartner(+id);
     else if (act === 'copy') copy(v);
+    else if (act === 'package-done') { try { localStorage.setItem('tbf-package-done', '1'); } catch (e) {} rerenderKeep(); }
     else if (act === 'period') { ui.period = v; rerenderKeep(); }
     else if (act === 'goto-group') { ui.dealGroup = v; ui.dealView = 'list'; location.hash = '#deals'; }
     else if (act === 'group') { ui.dealGroup = v; rerenderKeep(); }

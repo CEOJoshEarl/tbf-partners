@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Business Funders</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<style>
+  :root { --brand: #2563EB; --brand-dark: #1D4ED8; --brand-soft: #EAF1FE; --ink: #0B1220; --body: #2B3445; --muted: #5B6478; --line: #DDE2EA; --soft: #F5F7FA; --white: #fff; --good: #0F7A4A; --bad: #B4232A; --font: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color-scheme: light; }
+  [hidden] { display: none !important; }
+  *, *::before, *::after { box-sizing: border-box; }
+  body { margin: 0; background: var(--white); color: var(--body); font: 400 17px/1.6 var(--font); -webkit-font-smoothing: antialiased; }
+  h1, h2, h3, p, ul { margin: 0; padding: 0; }
+  h1 { font-size: 46px; line-height: 1.1; font-weight: 800; letter-spacing: -.02em; color: var(--white); text-wrap: balance; }
+  h2 { font-size: 36px; line-height: 1.15; font-weight: 800; letter-spacing: -.02em; color: var(--ink); text-wrap: balance; }
+  h3 { font-size: 20px; line-height: 1.3; font-weight: 700; color: var(--ink); }
+  a { color: var(--brand); }
+  :focus-visible { outline: 3px solid rgba(37,99,235,.45); outline-offset: 2px; }
+  .in { max-width: 1200px; margin: 0 auto; padding-left: max(24px, env(safe-area-inset-left, 0px)); padding-right: max(24px, env(safe-area-inset-right, 0px)); }
+  .preview { background: #FDF1DC; color: #9A5B00; font-size: 14px; font-weight: 600; padding: 8px 0; }
+  .preview a { color: inherit; font-weight: 700; }
+  .top { background: var(--ink); color: var(--white); font-size: 15px; padding: 8px 0; }
+  .top .in { display: flex; justify-content: flex-end; gap: 20px; flex-wrap: wrap; }
+  .top b { font-size: 17px; font-weight: 700; }
+  .top a { color: inherit; text-decoration: none; }
+  header { border-bottom: 1px solid var(--line); background: var(--white); }
+  header .in { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 10px; flex-wrap: wrap; }
+  .logos { display: flex; align-items: center; gap: 16px; }
+  .logos img { display: block; height: 68px; width: auto; max-width: 200px; object-fit: contain; }
+  .logos span { font-size: 13px; color: var(--muted); font-weight: 600; max-width: 110px; line-height: 1.25; }
+  .tag { font-weight: 700; color: var(--ink); }
+  .lang { font-size: 14px; font-weight: 600; margin-left: 14px; }
+  .hero { background: linear-gradient(135deg, #0B1F52 0%, #1D4ED8 62%, #2563EB 100%); padding-block: 48px; }
+  .hero-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 48px; align-items: start; }
+  .hero-copy { color: #DCE6FB; display: flex; flex-direction: column; gap: 18px; padding-top: 12px; }
+  .hero-copy .sub { font-size: 21px; font-weight: 700; color: var(--white); }
+  .hero-copy ul { list-style: none; display: flex; flex-direction: column; gap: 8px; border-left: 4px solid #7FA6F5; padding-left: 16px; }
+  .hero-copy li { color: var(--white); font-weight: 500; }
+  .call { color: var(--white); font-weight: 700; }
+  .call a { color: inherit; }
+  .form { background: var(--white); border-radius: 18px; padding: 26px; box-shadow: 0 18px 50px rgba(11,18,32,.28); display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+  .form h2 { font-size: 26px; }
+  .form > p { color: var(--muted); font-size: 16px; }
+  .fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .f { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .f.full { grid-column: 1 / -1; }
+  .f label { font-size: 14px; font-weight: 600; color: var(--ink); }
+  .f label i { color: var(--bad); font-style: normal; }
+  .f input, .f select, .f textarea { width: 100%; height: 52px; padding: 0 12px; border: 1px solid var(--line); border-radius: 10px; font: inherit; font-size: 16px; color: var(--ink); background: var(--white); }
+  .f textarea { height: 90px; padding: 10px 12px; }
+  .f input:focus, .f select:focus, .f textarea:focus { border-color: var(--brand); outline: 3px solid rgba(37,99,235,.18); }
+  .f .e { display: none; color: var(--bad); font-size: 13.5px; font-weight: 600; }
+  .f.bad input, .f.bad select { border-color: var(--bad); }
+  .f.bad .e { display: block; }
+  .tick { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; line-height: 1.45; cursor: pointer; }
+  .tick input { width: 20px; height: 20px; flex: none; margin: 1px 0 0; accent-color: var(--brand); }
+  .btn { display: inline-flex; align-items: center; justify-content: center; min-height: 60px; padding: 0 28px; border: 0; border-radius: 12px; background: var(--brand); color: var(--white); font: inherit; font-size: 18px; font-weight: 800; cursor: pointer; text-decoration: none; }
+  .btn:hover { background: var(--brand-dark); }
+  .btn.ghost { background: var(--white); color: var(--brand-dark); }
+  .done { text-align: center; padding: 32px 8px; display: flex; flex-direction: column; gap: 10px; align-items: center; }
+  .done svg { width: 56px; height: 56px; color: var(--good); }
+  section.band { padding-block: 64px; }
+  section.soft { background: var(--soft); }
+  .center { text-align: center; max-width: 780px; margin: 0 auto 36px; display: flex; flex-direction: column; gap: 12px; }
+  .cards { display: grid; gap: 20px; }
+  .c4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .c3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .card { background: var(--white); border: 1px solid var(--line); border-radius: 14px; padding: 24px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+  .card .ic { width: 44px; height: 44px; border-radius: 12px; background: var(--brand-soft); color: var(--brand); display: grid; place-items: center; font-weight: 800; font-size: 18px; }
+  .step .ic { background: var(--brand); color: var(--white); border-radius: 50%; }
+  .cta { background: var(--ink); color: #C9D3E6; }
+  .cta h2 { color: var(--white); }
+  .cta .in { display: flex; flex-direction: column; align-items: center; gap: 18px; text-align: center; }
+  footer { background: #060B18; color: #9AA6BC; font-size: 14px; padding-block: 28px; }
+  footer .in { display: flex; flex-direction: column; gap: 8px; }
+  footer a { color: #C9D3E6; }
+  .wide { max-width: 860px; margin: 0 auto; }
+  .sect { display: flex; flex-direction: column; gap: 12px; }
+  .sect + .sect { margin-top: 12px; }
+  .sect h3 { border-bottom: 1px solid var(--line); padding-bottom: 8px; }
+  .note { font-size: 14px; color: var(--muted); }
+  @media (max-width: 960px) { .hero-grid { grid-template-columns: minmax(0, 1fr); gap: 28px; } .c4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } h1 { font-size: 38px; } }
+  @media (max-width: 620px) { .c4, .c3, .fields { grid-template-columns: minmax(0, 1fr); } h1 { font-size: 34px; } h2 { font-size: 28px; } section.band { padding-block: 44px; } .form { padding: 20px; } .logos img { height: 54px; } .tag { display: none; } .in { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); } }
+  @media print { .preview, .top, .btn, .lang, .cta, .tag { display: none !important; } .hero { background: none; padding: 0; } .form { box-shadow: none; padding: 0; } h1 { color: var(--ink); } .f input, .f select, .f textarea { height: 36px; } }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="shared.js"></script>
+<script>
+(function () {
+  var q = new URLSearchParams(location.search), page = q.get('page') || 'biz', ref = q.get('ref') || '', lang = q.get('lang') === 'es' ? 'es' : 'en', preview = q.get('preview') === '1';
+  var cfg = defaultSite(), prof = null, phone = TBF_PHONE, email = TBF_EMAIL;
+
+  var EN = {
+    bizTag: 'Get started today and speak with an advisor', partnerTag: 'Partner with The Business Funders', call: 'Call now',
+    bizH1: 'Small Business Loans', bizSub: 'Financing options for your business:', 'list': ['SBA Loans', 'Lines of Credit', 'Working Capital', 'Equipment Financing', 'Accounts Receivable Financing', 'Credit Card Stacking', 'Commercial Real Estate', 'And more'],
+    formT: 'See your options', formS: 'Takes about a minute. An advisor follows up with you.',
+    first: 'First name', last: 'Last name', company: 'Business name', email: 'Email address', bizPhone: 'Business phone', mobile: 'Mobile phone', score: 'Credit score', industry: 'Industry', tib: 'Time in business', sales: 'Annual sales', product: 'Product', state: 'State', web: 'Do you have a website?', yes: 'Yes', no: 'No', choose: 'Choose one', title: 'Job title',
+    consent1: 'By checking this box I agree to the', terms: 'terms of use', and: 'and', privacy: 'privacy policy', consent2: ', and to receive SMS, email and phone communication.',
+    apply: 'Apply now', sending: 'Sending...', err: 'Required', errSend: 'That did not send. Please try again or call us.',
+    doneT: 'Thank you!', doneS: 'We have your information. An advisor will reach out soon.',
+    whatH: 'What is a small business loan?', whatP: 'A small business loan is any funding made for a business, whether it is new or established. Different loans fit different goals, and how each one works depends on the type.',
+    whyCards: [['Simple application', 'One short form. An advisor takes it from there.'], ['Over 40 funding programs', 'More programs means more ways to find a fit for your business.'], ['Fast funding', 'Same-day funding is available on some products.'], ['Real people', 'Talk to an advisor who explains your options in plain words.']],
+    readyH: 'What do you need to qualify?', readyP: 'Requirements vary by product. Your advisor will go over what fits.', ready: [['4+ months in business', 'Some options are open to businesses with as little as 4 months in business.'], ['$10,000+ monthly sales', 'Most options look for at least $10,000 a month, or $120,000 a year, in sales.'], ['No minimum credit score', 'Some options have no minimum score. Others do, depending on the product.']],
+    stepsH: 'Getting started is easy', steps: [['Apply online', 'Fill out the short form on this page.'], ['Review options', 'Your advisor goes over the options with you.'], ['Get funded', 'Pick what works for you and finish the paperwork.']],
+    ctaH: 'Ready to see your options?', ctaB: 'Apply now', full: 'Prefer the full application?',
+    partnerH1: 'Become a partner today', partnerSub: 'Online application', perks: ['Put your relationships to work', 'Over 40 funding programs for your clients', 'Real-time partner portal', 'Earn commission on funded deals'],
+    pFormT: 'Join the partner program', pFormS: 'Fill this out and we will reach out about the program.', join: 'Apply now',
+    pDoneS: 'We have your application. Our partnership team will reach out soon.',
+    howH: 'How it works', howS: 'Three simple steps', how: [['Share your client', 'Get their name, phone and email and send them over.'], ['We take it from there', 'Our team contacts them and works the deal.'], ['Earn commission', 'You earn commission when the referral funds.']],
+    qH: 'Have questions?', qP: 'Our partnership team can walk you through how the program works.', qB: 'Speak with an advisor',
+    appT: 'Funding application', appS: 'Fill this out online, or print it and send it to your advisor.', print: 'Print blank application', secBiz: 'Business', secOwner: 'Owner', secFund: 'Funding request', legal: 'Legal business name', dba: 'DBA (if any)', address: 'Business address', city: 'City', zip: 'ZIP', entity: 'Business type', start: 'Business start date', ownerName: 'Owner full name', ownerPct: 'Ownership %', amount: 'Amount requested', use: 'What is the money for?', monthly: 'Average monthly sales', secure: 'Do not enter your Social Security number or bank login here. Your advisor will collect those securely.', submitApp: 'Submit application',
+    password: 'Create a password (10+ characters)', haveAcct: 'Already a partner?', logIn: 'Log in', tooShort: 'Please use at least 10 characters.', feeNote: 'A success fee applies once you are funded. The amount depends on your type of funding, and your advisor will go over it with you before you sign.', rights: 'All rights reserved.', backPortal: 'Preview of your partner website.', back: 'Back to portal', es: 'Español', en: 'English'
+  };
+  var ES = {
+    bizTag: 'Comience hoy y hable con un asesor', partnerTag: 'Asóciese con The Business Funders', call: 'Llame ahora',
+    bizH1: 'Préstamos para pequeñas empresas', bizSub: 'Opciones de financiamiento para su negocio:', 'list': ['Préstamos SBA', 'Líneas de crédito', 'Capital de trabajo', 'Financiamiento de equipos', 'Financiamiento de cuentas por cobrar', 'Combinación de tarjetas de crédito', 'Bienes raíces comerciales', 'Y más'],
+    formT: 'Vea sus opciones', formS: 'Toma alrededor de un minuto. Un asesor se comunicará con usted.',
+    first: 'Nombre', last: 'Apellido', company: 'Nombre del negocio', email: 'Correo electrónico', bizPhone: 'Teléfono del negocio', mobile: 'Teléfono móvil', score: 'Puntaje de crédito', industry: 'Industria', tib: 'Tiempo en el negocio', sales: 'Ventas anuales', product: 'Producto', state: 'Estado', web: '¿Tiene sitio web?', yes: 'Sí', no: 'No', choose: 'Elija uno', title: 'Cargo',
+    consent1: 'Al marcar esta casilla acepto los', terms: 'términos de uso', and: 'y la', privacy: 'política de privacidad', consent2: ', y recibir comunicaciones por SMS, correo electrónico y teléfono.',
+    apply: 'Solicitar ahora', sending: 'Enviando...', err: 'Obligatorio', errSend: 'No se pudo enviar. Inténtelo de nuevo o llámenos.',
+    doneT: '¡Gracias!', doneS: 'Recibimos su información. Un asesor se comunicará pronto.',
+    whatH: '¿Qué es un préstamo para pequeñas empresas?', whatP: 'Un préstamo para pequeñas empresas es cualquier financiamiento creado para un negocio, nuevo o establecido. Cada tipo de préstamo sirve para metas distintas y funciona de manera diferente.',
+    whyCards: [['Solicitud sencilla', 'Un formulario corto. Un asesor se encarga del resto.'], ['Más de 40 programas de financiamiento', 'Más programas significan más formas de encontrar lo que le conviene.'], ['Fondos rápidos', 'Hay fondos el mismo día en algunos productos.'], ['Personas reales', 'Hable con un asesor que explica sus opciones con palabras claras.']],
+    readyH: '¿Qué necesita para calificar?', readyP: 'Los requisitos varían según el producto. Su asesor le explicará qué le conviene.', ready: [['4+ meses en el negocio', 'Algunas opciones aceptan negocios con tan solo 4 meses de operación.'], ['$10,000+ en ventas mensuales', 'La mayoría de las opciones buscan al menos $10,000 al mes, o $120,000 al año, en ventas.'], ['Sin puntaje mínimo', 'Algunas opciones no tienen puntaje mínimo. Otras sí, según el producto.']],
+    stepsH: 'Comenzar es fácil', steps: [['Solicite en línea', 'Complete el formulario corto en esta página.'], ['Revise sus opciones', 'Su asesor repasa las opciones con usted.'], ['Reciba los fondos', 'Elija lo que le conviene y termine el papeleo.']],
+    ctaH: '¿Listo para ver sus opciones?', ctaB: 'Solicitar ahora', full: '¿Prefiere la solicitud completa?',
+    partnerH1: 'Conviértase en socio hoy', partnerSub: 'Solicitud en línea', perks: ['Aproveche sus relaciones', 'Más de 40 programas de financiamiento para sus clientes', 'Portal de socios en tiempo real', 'Gane comisión por cada negocio financiado'],
+    pFormT: 'Únase al programa de socios', pFormS: 'Complete este formulario y nos comunicaremos sobre el programa.', join: 'Solicitar ahora',
+    pDoneS: 'Recibimos su solicitud. Nuestro equipo de socios se comunicará pronto.',
+    howH: 'Cómo funciona', howS: 'Tres pasos simples', how: [['Comparta su cliente', 'Obtenga su nombre, teléfono y correo y envíenoslo.'], ['Nosotros nos encargamos', 'Nuestro equipo lo contacta y trabaja el caso.'], ['Gane comisión', 'Usted gana comisión cuando el referido recibe los fondos.']],
+    qH: '¿Tiene preguntas?', qP: 'Nuestro equipo de socios puede explicarle cómo funciona el programa.', qB: 'Hablar con un asesor',
+    appT: 'Solicitud de financiamiento', appS: 'Complétela en línea o imprímala y envíela a su asesor.', print: 'Imprimir solicitud en blanco', secBiz: 'Negocio', secOwner: 'Propietario', secFund: 'Solicitud de fondos', legal: 'Nombre legal del negocio', dba: 'Nombre comercial (si aplica)', address: 'Dirección del negocio', city: 'Ciudad', zip: 'Código postal', entity: 'Tipo de negocio', start: 'Fecha de inicio', ownerName: 'Nombre completo del propietario', ownerPct: '% de propiedad', amount: 'Monto solicitado', use: '¿Para qué es el dinero?', monthly: 'Ventas mensuales promedio', secure: 'No ingrese su número de Seguro Social ni acceso bancario aquí. Su asesor los recopilará de forma segura.', submitApp: 'Enviar solicitud',
+    password: 'Cree una contraseña (10+ caracteres)', haveAcct: '¿Ya es socio?', logIn: 'Iniciar sesión', tooShort: 'Use al menos 10 caracteres.', feeNote: 'Se aplica una tarifa de éxito una vez que reciba los fondos. El monto depende del tipo de financiamiento, y su asesor lo revisará con usted antes de firmar.', rights: 'Todos los derechos reservados.', backPortal: 'Vista previa de su sitio de socio.', back: 'Volver al portal', es: 'Español', en: 'English'
+  };
+  var T = lang === 'es' ? ES : EN;
+  document.documentElement.lang = lang;
+
+  function esc(v) { return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function opt(list, label) { return '<option value="">' + esc(label) + '</option>' + list.map(function (v) { return '<option>' + esc(v) + '</option>'; }).join(''); }
+  function inp(name, label, type, cls, req) { return '<div class="f ' + (cls || '') + '" data-f="' + name + '"><label for="' + name + '">' + esc(label) + (req === false ? '' : ' <i>*</i>') + '</label><input id="' + name + '" name="' + name + '" type="' + (type || 'text') + '"' + (req === false ? '' : ' required') + '><span class="e">' + esc(T.err) + '</span></div>'; }
+  function sel(name, label, list, cls) { return '<div class="f ' + (cls || '') + '" data-f="' + name + '"><label for="' + name + '">' + esc(label) + ' <i>*</i></label><select id="' + name + '" name="' + name + '" required>' + opt(list, T.choose) + '</select><span class="e">' + esc(T.err) + '</span></div>'; }
+  function consent() { return '<label class="tick" data-f="ok"><input type="checkbox" name="ok" required><span>' + esc(T.consent1) + ' <a href="' + SITE + '/terms-of-use" target="_blank" rel="noopener">' + esc(T.terms) + '</a> ' + esc(T.and) + ' <a href="' + SITE + '/privacy-policy" target="_blank" rel="noopener">' + esc(T.privacy) + '</a>' + esc(T.consent2) + ' <i style="color:var(--bad);font-style:normal">*</i></span></label>'; }
+  function hp() { return '<input type="text" name="website_url" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px">'; }
+  function link(p, l) { return siteUrl(p, l || lang, ref) + (preview ? '&preview=1' : ''); }
+  function cards(list, cls, numbered, letters) { return '<div class="cards ' + cls + '">' + list.map(function (c, i) { return '<div class="card ' + (numbered ? 'step' : '') + '"><span class="ic">' + (numbered ? i + 1 : (letters ? c[0].charAt(0) : i + 1)) + '</span><h3>' + esc(c[0]) + '</h3><p>' + esc(c[1]) + '</p></div>'; }).join('') + '</div>'; }
+
+  function shell(tag, body) {
+    var logos = '<div class="logos">' + (cfg.logo ? '<img src="' + esc(cfg.logo) + '" alt="' + esc(prof && prof.company || 'Partner') + '"><span>in partnership with</span>' : '') + '<img src="' + LOGO + '" alt="The Business Funders"></div>';
+    return (preview ? '<div class="preview"><div class="in">' + esc(T.backPortal) + ' <a href="index.html#website">' + esc(T.back) + '</a></div></div>' : '')
+      + '<div class="top"><div class="in"><span>' + esc(T.call) + ' <a href="tel:' + esc(phone.replace(/[^0-9+]/g, '')) + '"><b>' + esc(phone) + '</b></a></span><a href="' + link(page, lang === 'es' ? 'en' : 'es') + '" style="font-weight:600;text-decoration:underline">' + (lang === 'es' ? T.en : T.es) + '</a></div></div>'
+      + '<header><div class="in">' + logos + '<span class="tag">' + esc(tag) + '</span></div></header>' + body
+      + '<footer><div class="in"><span>' + esc(phone) + ' · ' + esc(email) + ' · ' + TBF_HOURS + '</span><span><a href="' + SITE + '/terms-of-use" target="_blank" rel="noopener">' + esc(T.terms) + '</a> · <a href="' + SITE + '/privacy-policy" target="_blank" rel="noopener">' + esc(T.privacy) + '</a></span><span>© ' + new Date().getFullYear() + ' The Business Funders. ' + esc(T.rights) + '</span></div></footer>';
+  }
+  function bizPage() {
+    return shell(T.bizTag, '<section class="hero"><div class="in hero-grid"><div class="hero-copy"><h1>' + esc(T.bizH1) + '</h1><p class="sub">' + esc(T.bizSub) + '</p><ul>' + T.list.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul></div>'
+      + '<form class="form" id="lead-form" data-kind="biz" novalidate><h2>' + esc(T.formT) + '</h2><p>' + esc(T.formS) + '</p><div class="fields">'
+      + inp('first', T.first) + inp('last', T.last) + inp('company', T.company) + inp('email', T.email, 'email') + inp('phone', T.bizPhone, 'tel') + inp('mobile', T.mobile, 'tel')
+      + sel('score', T.score, SCORES) + sel('industry', T.industry, INDUSTRIES) + sel('tib', T.tib, TIB) + sel('sales', T.sales, SALES) + sel('product', T.product, PRODUCTS.map(function (p) { return p.name; })) + sel('state', T.state, US_STATES) + sel('web', T.web, [T.yes, T.no], 'full')
+      + '</div>' + hp() + consent() + '<button class="btn">' + esc(T.apply) + '</button><p class="note" style="text-align:center">' + esc(T.full) + ' <a href="' + link('apply') + '">' + esc(T.appT) + '</a></p></form></div></section>'
+      + '<section class="band"><div class="in"><div class="center"><h2>' + esc(T.whatH) + '</h2><p>' + esc(T.whatP) + '</p></div>' + cards(T.whyCards, 'c4', false, true) + '</div></section>'
+      + '<section class="band soft"><div class="in"><div class="center"><h2>' + esc(T.readyH) + '</h2><p>' + esc(T.readyP) + '</p></div>' + cards(T.ready, 'c3', false, true) + '</div></section>'
+      + '<section class="band"><div class="in"><div class="center"><h2>' + esc(T.stepsH) + '</h2></div>' + cards(T.steps, 'c3', true) + '</div></section>'
+      + '<section class="band soft"><div class="in"><p class="note" style="text-align:center;font-size:15px">' + esc(T.feeNote) + '</p></div></section><section class="band cta"><div class="in"><h2>' + esc(T.ctaH) + '</h2><a class="btn" href="#lead-form">' + esc(T.ctaB) + '</a></div></section>');
+  }
+  function partnerPage() {
+    return shell(T.partnerTag, '<section class="hero"><div class="in hero-grid"><div class="hero-copy"><h1>' + esc(T.partnerH1) + '</h1><p class="sub">' + esc(T.partnerSub) + '</p><ul>' + T.perks.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul></div>'
+      + '<form class="form" id="lead-form" data-kind="partner" novalidate><h2>' + esc(T.pFormT) + '</h2><p>' + esc(T.pFormS) + '</p><div class="fields">'
+      + inp('first', T.first) + inp('last', T.last) + inp('phone', T.mobile, 'tel') + inp('email', T.email, 'email') + inp('company', T.company) + inp('title', T.title) + sel('state', T.state, US_STATES) + inp('bizPhone', T.bizPhone, 'tel', '', false) + sel('industry', T.industry, INDUSTRIES, 'full') + inp('password', T.password, 'password', 'full')
+      + '</div>' + hp() + consent() + '<button class="btn">' + esc(T.join) + '</button><p class="note" style="text-align:center">' + esc(T.haveAcct) + ' <a href="index.html">' + esc(T.logIn) + '</a></p></form></div></section>'
+      + '<section class="band"><div class="in"><div class="center"><h2>' + esc(T.howH) + '</h2><p>' + esc(T.howS) + '</p></div>' + cards(T.how, 'c3', true) + '</div></section>'
+      + '<section class="band cta"><div class="in"><h2>' + esc(T.qH) + '</h2><p>' + esc(T.qP) + '</p><a class="btn" href="tel:' + esc(phone.replace(/[^0-9+]/g, '')) + '">' + esc(T.qB) + ': ' + esc(phone) + '</a></div></section>');
+  }
+  function applyPage() {
+    return shell(T.bizTag, '<section class="band soft"><div class="in wide"><form class="form" id="lead-form" data-kind="apply" novalidate><h2>' + esc(T.appT) + '</h2><p>' + esc(T.appS) + '</p>'
+      + '<div class="sect"><h3>' + esc(T.secBiz) + '</h3><div class="fields">' + inp('company', T.legal) + inp('dba', T.dba, 'text', '', false) + inp('address', T.address, 'text', 'full') + inp('city', T.city) + sel('state', T.state, US_STATES) + inp('zip', T.zip) + inp('entity', T.entity) + inp('start', T.start, 'date') + sel('industry', T.industry, INDUSTRIES) + inp('phone', T.bizPhone, 'tel') + inp('website', T.web, 'text', '', false) + '</div></div>'
+      + '<div class="sect"><h3>' + esc(T.secOwner) + '</h3><div class="fields">' + inp('first', T.first) + inp('last', T.last) + inp('email', T.email, 'email') + inp('mobile', T.mobile, 'tel') + inp('pct', T.ownerPct) + sel('score', T.score, SCORES) + '</div></div>'
+      + '<div class="sect"><h3>' + esc(T.secFund) + '</h3><div class="fields">' + inp('amount', T.amount) + sel('product', T.product, PRODUCTS.map(function (p) { return p.name; })) + inp('monthly', T.monthly) + sel('sales', T.sales, SALES) + sel('tib', T.tib, TIB) + '<div class="f full"><label for="use">' + esc(T.use) + '</label><textarea id="use" name="use"></textarea></div></div></div>'
+      + '<p class="note">' + esc(T.feeNote) + ' ' + esc(T.secure) + '</p>' + hp() + consent() + '<button class="btn">' + esc(T.submitApp) + '</button><button type="button" class="btn ghost" id="print" style="border:1px solid var(--line)">' + esc(T.print) + '</button></form></div></section>');
+  }
+  function start() {
+  phone = cfg.customPhone || cfg.phone || TBF_PHONE; email = cfg.email || TBF_EMAIL;
+  document.getElementById('app').innerHTML = page === 'partner' ? partnerPage() : page === 'apply' ? applyPage() : bizPage();
+  document.title = (page === 'partner' ? T.partnerH1 : page === 'apply' ? T.appT : T.bizH1) + ' | The Business Funders';
+  if (cfg.favicon) { var ic = document.createElement('link'); ic.rel = 'icon'; ic.href = cfg.favicon; document.head.appendChild(ic); }
+
+  /* Ad and analytics tags the partner saved in their website settings. IDs are checked so nothing else can be injected. */
+  function addTags(t) {
+    if (!t) return;
+    function script(src, inline) { var s = document.createElement('script'); if (src) { s.async = true; s.src = src; } else s.text = inline; document.head.appendChild(s); }
+    if (/^(G|UA|AW)-[A-Z0-9-]+$/i.test(t.ga)) { script('https://www.googletagmanager.com/gtag/js?id=' + t.ga); script('', "window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','" + t.ga + "');"); }
+    if (/^[0-9]{5,20}$/.test(t.fb)) script('', "!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','" + t.fb + "');fbq('track','PageView');");
+    if (/^[0-9]{5,20}$/.test(t.uet)) script('', "(function(w,d,t,r,u){var f,n,i;w[u]=w[u]||[],f=function(){var o={ti:'" + t.uet + "'};o.q=w[u],w[u]=new UET(o),w[u].push('pageLoad')},n=d.createElement(t),n.src=r,n.async=1,n.onload=n.onreadystatechange=function(){var s=this.readyState;s&&s!=='loaded'&&s!=='complete'||(f(),n.onload=n.onreadystatechange=null)},i=d.getElementsByTagName(t)[0],i.parentNode.insertBefore(n,i)})(window,document,'script','https://bat.bing.com/bat.js','uetq');");
+    if (/^https:\/\/[^\s"'<>]+$/.test(t.pixel)) { var im = new Image(1, 1); im.src = t.pixel; }
+  }
+  addTags(cfg.tracking && cfg.tracking[page === 'partner' ? 'partner' : 'biz']);
+
+  var pr = document.getElementById('print'); if (pr) pr.addEventListener('click', function () { document.getElementById('lead-form').reset(); window.print(); });
+  var form = document.getElementById('lead-form');
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var ok = true, first = null;
+    form.querySelectorAll('[required]').forEach(function (el) {
+      var bad = el.type === 'checkbox' ? !el.checked : !el.value.trim() || (el.type === 'email' && !/^\S+@\S+\.\S+$/.test(el.value.trim()));
+      var box = el.closest('.f'); if (box) box.classList.toggle('bad', bad);
+      if (bad) { ok = false; first = first || el; }
+    });
+    if (!ok) { first.focus(); return; }
+    var d = {}; new FormData(form).forEach(function (v, k) { d[k] = v; });
+    var kind = form.getAttribute('data-kind');
+    if (kind === 'apply') d.note = ['Full application.', d.dba && 'DBA: ' + d.dba, 'Address: ' + d.address + ', ' + d.city + ', ' + d.state + ' ' + d.zip, 'Type: ' + d.entity, 'Started: ' + d.start, 'Owner share: ' + d.pct + '%', 'Requested: ' + d.amount, 'Monthly sales: ' + d.monthly, d.use && 'Use: ' + d.use].filter(Boolean).join(' ');
+    else if (kind === 'biz') d.note = 'State: ' + d.state + '. Has website: ' + d.web + '. Mobile: ' + d.mobile + '.';
+    if (kind === 'partner' && d.password.length < 10) { var pb = form.querySelector('[data-f="password"]'); pb.classList.add('bad'); pb.querySelector('.e').textContent = T.tooShort; form.password.focus(); return; }
+    d.consent = true; if (d.bizPhone && !d.mobile) d.mobile = d.bizPhone;
+    var btn = form.querySelector('button:not([type=button])'), label = btn.textContent; btn.disabled = true; btn.textContent = T.sending;
+    function failed(err) { btn.disabled = false; btn.textContent = label; var p = form.querySelector('.send-err') || form.appendChild(Object.assign(document.createElement('p'), { className: 'send-err', style: 'color:var(--bad);font-weight:600' })); p.textContent = err && err.status && err.status < 500 ? err.message : T.errSend; }
+    if (kind === 'partner') {
+      var pw = d.password;
+      submitLead('signup', ref, d).then(function () {
+        var sb = supabase.createClient(SB_URL, SB_KEY);
+        return sb.auth.signInWithPassword({ email: d.email.trim().toLowerCase(), password: pw }).then(function (r) { if (r.error) throw r.error; location.href = 'index.html#home'; });
+      }).catch(failed);
+      return;
+    }
+    submitLead('deal', ref, d).then(function () {
+      form.innerHTML = '<div class="done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M8 12l3 3 5-6"/></svg><h2>' + esc(T.doneT) + '</h2><p>' + esc(T.doneS) + '</p><p><b>' + esc(phone) + '</b></p></div>';
+    }, failed);
+  });
+  }
+  if (ref) {
+    fetch(SB_URL + '/rest/v1/rpc/public_site', { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY }, body: JSON.stringify({ p_code: ref }) })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (j) { if (j) { prof = { company: j.company }; ['logo', 'favicon', 'phone', 'customPhone', 'email'].forEach(function (k) { if (j[k]) cfg[k] = j[k]; }); if (j.tracking) cfg.tracking = j.tracking; } }, function () {})
+      .then(start);
+  } else start();
+})();
+</script>
+</body>
+</html>

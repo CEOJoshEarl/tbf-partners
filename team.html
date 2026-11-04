@@ -331,7 +331,7 @@
   document.addEventListener('change', function (e) {
     var t = e.target, d = currentDeal();
     if (t.id === 'f-stage') { filter.stage = t.value; document.getElementById('deal-table').innerHTML = ''; render(); document.getElementById('f-stage').value = filter.stage; }
-    else if (t.id === 'st') { var st = +t.value, patch = { stage: st }; if (st === 10 && !d.funded_date) patch.funded_date = new Date().toISOString(); saveDeal(d, patch, 'Stage updated'); }
+    else if (t.id === 'st') { var st = +t.value, patch = { stage: st }; if (st === 10 && !d.funded_date) patch.funded_date = new Date().toISOString(); sb.from('deals').update(patch).eq('id', d.id).then(function (r) { if (r.error) { toast('That did not save. Please try again.'); return; } toast('Stage updated'); refresh(); return sb.auth.getSession().then(function (s) { return clientApi({ action: 'stage', deal: d.id }, s.data.session.access_token); }).catch(function () { toast('Saved here, but GHL did not update. Please move it there too.'); }); }); }
     else if (t.id === 'lr') saveDeal(d, { loss_reason: t.value }, 'Saved');
     else if (t.id === 'cn') saveDeal(d, { client_note: t.value }, 'Client message saved');
     else if (t.id === 'fp') saveDeal(d, { fee_pct: +String(t.value).replace(/[^0-9.]/g, '') || 0 }, 'Fee updated');

@@ -88,3 +88,8 @@ function clientApi(body, token) {
   return fetch(SB_URL + '/functions/v1/client', { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: SB_KEY, Authorization: 'Bearer ' + (token || SB_KEY) }, body: JSON.stringify(body) })
     .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok) { var e = new Error(j.error || 'That did not go through. Please call us.'); e.status = r.status; throw e; } return j; }); });
 }
+/* The first thing on the partner and client logins: who are you? Each role has its own site. */
+function roleChooser(active) {
+  function tab(key, label, href) { return '<a href="' + href + '" class="' + (key === active ? 'on' : '') + '"' + (key === active ? ' aria-current="page"' : '') + '>' + label + '</a>'; }
+  return '<nav class="roles" aria-label="Who is logging in?">' + tab('partner', 'Partner', 'index.html') + tab('client', 'Client', 'client.html') + tab('team', 'Team', 'team.html') + '</nav>';
+}

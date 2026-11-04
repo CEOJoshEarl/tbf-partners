@@ -56,6 +56,27 @@
   .fee { background: var(--soft); border-radius: 12px; padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; font-size: 15px; }
   .acts { display: flex; gap: 8px; flex-wrap: wrap; }
   @media (max-width: 480px) { h1 { font-size: 25px; } .hero .big { font-size: 38px; } .tile b { font-size: 22px; } }
+  .roles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; background: var(--soft); border-radius: 10px; padding: 4px; }
+  .roles a { text-align: center; padding: 9px 4px; border-radius: 8px; font-weight: 600; font-size: 15px; color: var(--muted); text-decoration: none; }
+  .roles a:hover { color: var(--ink); }
+  .roles a.on { background: var(--white); color: var(--brand-dark); box-shadow: 0 1px 2px rgba(11,18,32,.12); }
+  .hero { background: linear-gradient(135deg, #1D4ED8, #2563EB 60%, #3B82F6); color: #fff; border-radius: 18px; padding: 26px; }
+  .hero .big { font-size: 52px; font-weight: 800; letter-spacing: -.03em; line-height: 1.1; margin: 4px 0; }
+  .hero small { font-size: 16px; opacity: .92; display: block; }
+  .next { border-left: 5px solid var(--brand); } .next.warn { border-left-color: #D98A00; } .next.good { border-left-color: var(--good); }
+  .eyebrow { font-size: 13px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+  .team-note { background: var(--soft); border-radius: 10px; padding: 10px 12px; font-size: 16px; } .team-note b { color: var(--ink); }
+  .stack { display: flex; flex-direction: column; gap: 10px; } .sect { padding: 6px 2px 0; }
+  .steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+  .steps li { display: flex; align-items: center; gap: 12px; color: var(--muted); } .steps i { font-style: normal; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font-size: 14px; font-weight: 700; background: var(--soft); flex: none; }
+  .steps li.done { color: var(--body); } .steps li.done i { background: var(--good-soft); color: var(--good); } .steps li.now { color: var(--ink); font-weight: 700; } .steps li.now i { background: var(--brand); color: #fff; }
+  .round { background: var(--white); border: 1px solid var(--line); border-radius: 16px; padding: 0 18px; } .round summary { display: flex; justify-content: space-between; gap: 12px; padding: 16px 0; cursor: pointer; font-size: 17px; list-style: none; } .round summary::-webkit-details-marker { display: none; } .round summary b { color: var(--ink); } .round summary::after { content: ''; width: 8px; height: 8px; border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted); transform: rotate(45deg); align-self: center; margin: -3px 3px 0 4px; flex: none; } .round[open] summary::after { transform: rotate(-135deg); margin-top: 3px; } .round summary span { margin-left: auto; color: var(--ink); font-weight: 600; }
+  .round .row b { color: var(--ink); } .round .fee { margin-bottom: 16px; } .round .fee b { color: var(--ink); }
+  .offer { background: var(--white); } .offer .head b { color: var(--ink); }
+  .pill.mute { background: var(--soft); color: var(--muted); }
+  body { background: #F7F8FB; } .top img { height: 42px; }
+  main { max-width: 680px; }
+  @media (max-width: 480px) { .acts .btn { flex: 1; } .hero .big { font-size: 42px; } }
 </style>
 </head>
 <body>
@@ -73,7 +94,7 @@
 
   function showLogin(msg) {
     document.getElementById('top').hidden = true; last = '';
-    app.innerHTML = '<form class="card auth" id="login"><img data-logo alt="The Business Funders"><h1>Your funding portal</h1><p class="muted">See what stage we are in, every lender we applied to, and decide on your offers.</p>'
+    app.innerHTML = '<form class="card auth" id="login"><img data-logo alt="The Business Funders">' + roleChooser('client') + '<h1>Client login</h1><p class="muted">See what stage we are in, every lender we applied to, and decide on your offers.</p>'
       + '<div class="field"><label for="e">Email</label><input id="e" name="email" type="email" autocomplete="username" required></div>'
       + '<div class="field"><label for="p">Password</label><input id="p" name="password" type="password" autocomplete="current-password" required></div>'
       + '<p class="err" id="msg"' + (msg ? '' : ' hidden') + '>' + esc(msg || '') + '</p><button class="btn primary">Log in</button>'
@@ -96,32 +117,43 @@
   }
   function err(m) { var e = document.getElementById('msg'); if (e) { e.textContent = m; e.hidden = false; } }
 
-  function bureauLine(a) { return a.pull_type === 'soft' ? 'No inquiry' : (a.bureaus || []).map(function (b) { return BUREAU[b] || b; }).join(', '); }
+  function bureauLine(a) { return a.pull_type === 'soft' ? 'No credit inquiry' : (a.bureaus || []).map(function (b) { return BUREAU[b] || b; }).join(', '); }
   function pill(a) {
     if (a.status === 'denied') return '<span class="pill bad">Denied</span>';
     if (a.status === 'submitted') return '<span class="pill">Waiting on lender</span>';
     if (a.decision === 'accepted') return '<span class="pill good">You accepted</span>';
-    if (a.decision === 'rejected') return '<span class="pill bad">You passed</span>';
+    if (a.decision === 'rejected') return '<span class="pill mute">You passed</span>';
     return '<span class="pill warn">Needs your decision</span>';
   }
+  function fmt(d) { return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }); }
+  /* Plain words for the client, not our internal pipeline stages. */
+  var STEPS = [['Getting started', [1]], ['Preparing your file', [2, 3]], ['Applying to lenders', [4]], ['Your offers', [5, 6]], ['Final paperwork', [7, 8, 9]], ['Funded', [10]]];
+  function stepper(stage) {
+    var cur = 0; STEPS.forEach(function (s, i) { if (s[1].indexOf(stage) > -1) cur = i; });
+    return '<ol class="steps">' + STEPS.map(function (s, i) { return '<li class="' + (i < cur || stage === 10 ? 'done' : i === cur ? 'now' : '') + '"' + (i === cur ? ' aria-current="step"' : '') + '><i aria-hidden="true">' + (i < cur || stage === 10 ? '✓' : i + 1) + '</i><span>' + s[0] + '</span></li>'; }).join('') + '</ol>';
+  }
+  function nextStep(d, F, offers) {
+    var due = F.rounds.filter(function (r) { return r.fee > 0 && !r.paid; })[0];
+    if (offers.length) return ['Your turn', 'Review ' + (offers.length === 1 ? 'your new offer' : 'your ' + offers.length + ' new offers'), 'Choose accept or no thanks below. Nothing is final until you decide.', 'warn'];
+    if (due) return ['Your turn', 'Pay your ' + money(due.fee) + ' round ' + due.round + ' fee', 'Due when your card arrives or your loan is deposited' + (due.dueBy ? ', and no later than ' + fmt(due.dueBy) : '') + '. Pay by your payment link, Zelle, Cash App or Venmo. Round ' + (due.round + 1) + ' begins once we receive it.', 'warn'];
+    if (d.stage === 0) return ['Update', 'This file is closed', 'Questions? Call us at ' + PHONE + '.', ''];
+    if (d.stage === 10) return ['All set', 'You are funded', 'Thank you for working with us. Call ' + PHONE + ' anytime.', 'good'];
+    return ['Our turn', 'We are working on your file', 'Nothing is needed from you right now. We will email you when an offer comes in.', ''];
+  }
   function dealHtml(d) {
-    var F = fundingSummary(d.apps, d.payments, d.fee_pct), offers = d.apps.filter(function (a) { return a.status === 'approved' && !a.decision; });
-    var stage = d.stage === 0 ? '<span class="pill bad">File closed</span>' : '<div class="track" aria-hidden="true">' + [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(function (n) { return '<i class="' + (n <= d.stage ? 'done' : '') + '"></i>'; }).join('') + '</div><div class="track-label"><b>' + esc(STAGES[d.stage]) + '</b><span>Step ' + d.stage + ' of 10</span></div>';
-    return '<section class="card hero"><h2>' + esc(d.company || 'Your funding') + '</h2><div><div class="big">' + money(F.accepted) + '</div><small>Total you have accepted' + (F.approved !== F.accepted ? ' · ' + money(F.approved) + ' approved by lenders' : '') + '</small></div></section>'
-      + '<section class="card"><h2>Where we are</h2>' + stage + (d.note ? '<p>' + esc(d.note) + '</p>' : '') + '</section>'
-      + (offers.length ? '<section class="card"><h2>Offers waiting on you</h2><p class="muted">Nothing is final until you decide. Accepted offers add to your total.</p>' + offers.map(function (a) {
-        return '<div class="offer"><div class="head"><b style="color:var(--ink)">' + esc(a.lender) + (a.product ? ' · ' + esc(a.product) : '') + '</b><span class="pill">Round ' + a.round + '</span></div><div class="amt">' + money(a.approved_amt) + '</div>' + (a.terms ? '<p class="muted">' + esc(a.terms) + '</p>' : '')
+    var F = fundingSummary(d.apps, d.payments, d.fee_pct), offers = d.apps.filter(function (a) { return a.status === 'approved' && !a.decision; }), N = nextStep(d, F, offers), lastR = F.rounds.length ? F.rounds[F.rounds.length - 1].round : 0;
+    return '<section class="hero"><div><small>' + esc(d.company || 'Your funding') + '</small><div class="big">' + money(F.accepted) + '</div><small>Total funding you have accepted</small></div></section>'
+      + '<section class="card next ' + N[3] + '"><span class="eyebrow">' + N[0] + '</span><h2>' + esc(N[1]) + '</h2><p>' + esc(N[2]) + '</p>' + (d.note ? '<p class="team-note"><b>From your team:</b> ' + esc(d.note) + '</p>' : '') + '</section>'
+      + (offers.length ? '<section class="stack"><h2 class="sect">Offers for you</h2>' + offers.map(function (a) {
+        return '<div class="offer"><div class="head"><b>' + esc(a.lender) + (a.product ? ' · ' + esc(a.product) : '') + '</b><span class="pill">Round ' + a.round + '</span></div><div class="amt">' + money(a.approved_amt) + '</div>' + (a.terms ? '<p class="muted">' + esc(a.terms) + '</p>' : '')
           + '<div class="acts"><button class="btn primary" data-decide="accepted" data-id="' + a.id + '" data-amt="' + money(a.approved_amt) + '">Accept this offer</button><button class="btn" data-decide="rejected" data-id="' + a.id + '" data-amt="' + money(a.approved_amt) + '">No thanks</button></div></div>';
       }).join('') + '</section>' : '')
-      + (F.rounds.length ? F.rounds.map(function (r, i) {
-        var next = r.round + 1;
-        return '<section class="card"><div class="head"><h2>Round ' + r.round + '</h2><b style="color:var(--ink)">' + money(r.accepted) + ' accepted</b></div><div>' + r.apps.map(function (a) {
-          return '<div class="row"><div><b style="color:var(--ink)">' + esc(a.lender) + '</b><small>' + esc(a.product || '') + (a.product ? ' · ' : '') + esc(bureauLine(a)) + '</small></div><div class="right">' + (a.status === 'approved' ? '<b>' + money(a.approved_amt) + '</b>' : '') + pill(a) + '</div></div>';
-        }).join('') + '</div>'
-          + (r.fee > 0 ? '<div class="fee"><span>Fee for this round (' + F.pct + '%): <b style="color:var(--ink)">' + money(r.fee) + '</b>' + (r.paid ? '' : '<br><small class="muted">Due when your card arrives or your loan is deposited' + (r.dueBy ? ', and no later than ' + new Date(r.dueBy).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ', and no later than 10 days after approval') + '. Pay by your payment link, Zelle, Cash App or Venmo. Round ' + next + ' begins once we receive it.</small>') + '</span>' + (r.paid ? '<span class="pill good">Paid</span>' : '<span class="pill warn">Due</span>') + '</div>' : '') + '</section>';
-      }).join('')
-      + '<section class="card"><h2>Credit inquiries so far</h2><p class="muted">Counted from every hard pull in your file, approved or denied.</p><div class="tiles">' + ['EX', 'EQ', 'TU'].map(function (b) { return '<div class="tile"><span>' + BUREAU[b] + '</span><b>' + F.inquiries[b] + '</b></div>'; }).join('') + '</div></section>'
-      : '<section class="card"><h2>Applications</h2><p class="muted">Nothing submitted yet. Each lender will show up here as soon as we apply.</p></section>');
+      + '<section class="card"><h2>Your progress</h2>' + (d.stage === 0 ? '<span class="pill bad" style="align-self:flex-start">File closed</span>' : stepper(d.stage)) + '</section>'
+      + (F.rounds.length ? '<section class="stack"><h2 class="sect">Where we applied</h2>' + F.rounds.map(function (r) {
+        return '<details class="round"' + (r.round === lastR ? ' open' : '') + '><summary><b>Round ' + r.round + '</b><span>' + money(r.accepted) + ' accepted</span></summary>' + r.apps.map(function (a) {
+          return '<div class="row"><div><b>' + esc(a.lender) + '</b><small>' + esc(a.product || '') + (a.product ? ' · ' : '') + esc(bureauLine(a)) + '</small></div><div class="right">' + (a.status === 'approved' ? '<b>' + money(a.approved_amt) + '</b>' : '') + pill(a) + '</div></div>';
+        }).join('') + (r.fee > 0 ? '<div class="fee"><span>Fee for this round (' + F.pct + '%): <b>' + money(r.fee) + '</b></span>' + (r.paid ? '<span class="pill good">Paid</span>' : '<span class="pill warn">Due</span>') + '</div>' : '') + '</details>';
+      }).join('') + '</section><section class="card"><h2>Credit inquiries</h2><p class="muted">One for each hard pull, approved or denied.</p><div class="tiles">' + ['EX', 'EQ', 'TU'].map(function (b) { return '<div class="tile"><span>' + BUREAU[b] + '</span><b>' + F.inquiries[b] + '</b></div>'; }).join('') + '</div></section>' : '');
   }
   function load() {
     return sb.rpc('client_portal').then(function (r) {
@@ -136,7 +168,7 @@
     {
       document.getElementById('top').hidden = false;
       var name = data[0] && data[0].first ? ', ' + esc(data[0].first) : '';
-      app.innerHTML = '<div><h1>Welcome back' + name + '</h1></div>' + (data.length ? data.map(dealHtml).join('') : '<section class="card"><h2>No funding file found</h2><p>We could not find a file under this login. Please call ' + PHONE + ' and we will sort it out.</p></section>')
+      app.innerHTML = '<div><h1>Hi' + name + '</h1></div>' + (data.length ? data.map(dealHtml).join('') : '<section class="card"><h2>No funding file found</h2><p>We could not find a file under this login. Please call ' + PHONE + ' and we will sort it out.</p></section>')
         + '<p class="muted">Questions? Call ' + PHONE + ' or email partnership@thebusinessfunders.com, Monday to Friday, 10am to 5pm EST.</p>';
       logos();
     }

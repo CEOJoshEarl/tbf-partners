@@ -379,7 +379,7 @@
       var i = 0;
       state = {
         sample: false, funding: x[6].data || [],
-        profile: { first: me.first || '', last: me.last || '', email: me.email || '', phone: me.phone || '', company: me.company || '', code: me.code },
+        profile: { first: me.first || '', last: me.last || '', email: me.email || '', phone: me.phone || '', company: me.company || '', code: me.code, high: !!me.high_volume },
         site: Object.assign(defaultSite(), me.site || {}), done: me.done || [],
         news: (x[5].data || []).map(function (n) { return { at: n.created_at, text: n.text, author: n.author || '' }; }),
         deals: (x[1].data || []).map(mapDeal).concat(net),
@@ -451,17 +451,20 @@
     return d.getFullYear() === last.getFullYear() && d.getMonth() === last.getMonth();
   }
   var PERIODS = [['month', 'This month'], ['last', 'Last month'], ['year', 'Year to date'], ['all', 'All time']];
+  function myRate() { return state.profile.high ? 50 : 30; }
+  /* Estimate on accepted offers, less what is already earned. Final once the fee is collected. */
+  function estCommission(d) { if (d.via || d.network) return 0; var acc = partnerRounds(d).reduce(function (t, r) { return t + r.accepted; }, 0), pct = d.feePct == null ? 10 : d.feePct; return Math.max(0, Math.round(acc * pct / 100 * myRate() / 100 - (d.commission || 0))); }
   function dealTotal(d) { var rows = partnerRounds(d); return rows.length ? rows.reduce(function (t, r) { return t + r.accepted; }, 0) : (d.fundedAmt || 0); }
   function homePage() {
     var mine = state.deals.filter(function (d) { return !d.network; });
     var earned = state.deals.reduce(function (t, d) { return t + (d.commission || 0); }, 0), paid = state.deals.reduce(function (t, d) { return t + (d.paidDate ? (d.commission || 0) : 0); }, 0);
-    var funded = mine.reduce(function (t, d) { return t + dealTotal(d); }, 0), open = mine.filter(isOpen);
+    var funded = mine.reduce(function (t, d) { return t + dealTotal(d); }, 0), open = mine.filter(isOpen), est = mine.reduce(function (t, d) { return t + estCommission(d); }, 0);
     var attention = state.deals.filter(function (d) { return isOpen(d) && openItems(d).length; });
     var L = links(), name = state.profile.first, signed = state.partners.filter(function (p) { return p.status === 'Signed'; }).length;
     var recent = mine.slice().sort(function (a, b) { return String(b.created).localeCompare(String(a.created)); }).slice(0, 6);
     return '<div class="head"><div><h1>' + (name && !state.sample ? 'Welcome back, ' + esc(name) : 'Your partner dashboard') + '</h1><p>Send a business owner our way. We handle the rest and you get paid.</p></div><button class="btn primary" data-act="add-lead">' + icon('plus') + 'Add a lead</button></div>'
-      + '<div class="grid kpis home-kpis"><div class="card kpi lead"><span>Your commission</span><strong>' + money(earned) + '</strong><small>' + money(paid) + ' paid so far</small></div>'
-      + '<div class="card kpi"><span>Your clients funded</span><strong>' + money(funded) + '</strong></div>'
+      + '<div class="grid kpis home-kpis"><div class="card kpi lead"><span>Your commission</span><strong>' + money(earned) + '</strong><small>' + (est ? money(est) + ' estimated · ' : '') + money(paid) + ' paid so far</small></div>'
+      + '<div class="card kpi"><span>Accepted by your clients</span><strong>' + money(funded) + '</strong></div>'
       + '<div class="card kpi"><span>Leads in progress</span><strong>' + open.length + '</strong></div></div>'
       + '<div class="grid home-cols"><div class="stack">'
       + (attention.length ? '<section class="card attn-card"><div class="card-head"><h2>We need your help</h2></div><div class="attn">' + attention.map(function (d) { return '<button data-act="open-deal" data-id="' + d.id + '"><span class="dot"></span><span><b>' + esc(d.company) + '</b><small>' + esc(openItems(d)[0].text) + (openItems(d).length > 1 ? ' and ' + (openItems(d).length - 1) + ' more' : '') + '</small></span></button>'; }).join('') + '</div></section>' : '')
@@ -473,12 +476,6 @@
       + '<section class="card"><h2>Your network</h2><p style="margin-top:6px"><b style="color:var(--ink)">' + signed + '</b> signed partner' + (signed === 1 ? '' : 's') + '. You earn an override when they get a client funded.</p>' + linkRow('Invite other partners here', L.partner, 'l-partner') + '</section>'
       + '</div></div>';
   }
-  function levelInfo() {
-    var now = new Date(), prev = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-    function count(d0) { return state.deals.filter(function (d) { if (d.via || d.stage !== 10 || !d.fundedDate) return false; var f = new Date(d.fundedDate); return f.getFullYear() === d0.getFullYear() && f.getMonth() === d0.getMonth(); }).length; }
-    var last = count(prev), cur = count(now);
-    return { last: last, cur: cur, rate: last >= 10 ? 40 : 20, nextRate: cur >= 10 ? 40 : 20, lastName: prev.toLocaleDateString('en-US', { month: 'long' }), curName: now.toLocaleDateString('en-US', { month: 'long' }) };
-  }
   function packageDone() { try { return localStorage.getItem('tbf-package-done') === '1'; } catch (e) { return false; } }
   function packageCard() {
     if (packageDone()) return '';
@@ -488,11 +485,10 @@
       + '<button class="btn small" data-act="package-done" style="align-self:flex-start">I signed it</button></section>';
   }
   function levelCard() {
-    var L = levelInfo(), left = Math.max(0, 10 - L.cur), pct = Math.min(100, L.cur * 10);
-    return '<section class="card form-sec"><div class="card-head" style="margin:0"><h2>Your commission level</h2><span class="pill ' + (L.rate === 40 ? 'good' : '') + '">' + L.rate + '% this month</span></div>'
-      + '<p>' + L.last + ' funded in ' + esc(L.lastName) + ' set your ' + L.rate + '% rate for ' + esc(L.curName) + '.</p>'
-      + '<span class="bar"><i style="width:' + pct + '%"></i></span>'
-      + '<p style="color:var(--muted);font-size:15px">' + L.cur + ' of 10 funded in ' + esc(L.curName) + '. ' + (left ? 'Fund ' + left + ' more to earn 40% next month.' : 'You are at 40% next month.') + '</p></section>';
+    var r = myRate();
+    return '<section class="card form-sec"><div class="card-head" style="margin:0"><h2>Your commission rate</h2><span class="pill ' + (r === 50 ? 'good' : '') + '">' + r + '%</span></div>'
+      + '<p>You earn ' + r + '% of the fee we collect on each client you refer.</p>'
+      + (r === 50 ? '<p style="color:var(--muted);font-size:15px">You are approved as a high volume partner.</p>' : '<p style="color:var(--muted);font-size:15px">High volume partners approved by our team earn 50%.</p>') + '</section>';
   }
   function newsCard() { if (!state.news.length) return ''; return '<section class="card form-sec"><h2>News</h2>' + state.news.slice().reverse().map(function (n) { return '<div class="note" style="border-top:0;padding-top:0">' + esc(n.text) + '<small>' + (n.author ? 'From ' + esc(n.author) + ' · ' : '') + date(n.at) + '</small></div>'; }).join('') + '</section>'; }
   function linkRow(label, url, id) {
@@ -553,7 +549,7 @@
       }).join('') + '</section>';
     }).join('') + '</div>';
     else body = list.length ? '<div class="tbl"><table><thead><tr>' + th('company', 'Business') + th('product', 'Product') + th('stage', 'Stage') + th('created', 'Sent') + th('funded', 'Funded', 'num') + th('commission', 'Commission', 'num') + '</tr></thead><tbody>' + list.map(function (d) {
-      return '<tr data-act="open-deal" data-id="' + d.id + '" tabindex="0"><td><span class="main">' + esc(d.company) + '</span><span class="sub">' + esc(d.first + ' ' + d.last) + '</span></td><td class="hide-sm">' + esc(d.product) + '</td><td>' + stagePill(d) + (openItems(d).length ? ' <span class="pill warn">' + openItems(d).length + ' needed</span>' : '') + '</td><td class="hide-sm">' + date(d.created) + '</td><td class="num hide-sm">' + (d.fundedAmt ? money(d.fundedAmt) : '–') + '</td><td class="num hide-sm">' + (d.commission ? money(d.commission) : '–') + '</td></tr>';
+      return '<tr data-act="open-deal" data-id="' + d.id + '" tabindex="0"><td><span class="main">' + esc(d.company) + '</span><span class="sub">' + esc(d.first + ' ' + d.last) + '</span></td><td class="hide-sm">' + esc(d.product) + '</td><td>' + stagePill(d) + (openItems(d).length ? ' <span class="pill warn">' + openItems(d).length + ' needed</span>' : '') + '</td><td class="hide-sm">' + date(d.created) + '</td><td class="num hide-sm">' + (d.fundedAmt ? money(d.fundedAmt) : '–') + '</td><td class="num hide-sm">' + (d.commission ? money(d.commission) : estCommission(d) ? money(estCommission(d)) + ' est.' : '–') + '</td></tr>';
     }).join('') + '</tbody></table></div>' : '<div class="card empty"><h3>No matches</h3><p>Try a different search or stage.</p></div>';
     return '<div class="head"><div><h1>My Deals</h1><p>Every client you referred, from new lead to funded, in one place.</p></div><button class="btn primary" data-act="add-lead">' + icon('plus') + 'Add a lead</button></div>'
       + '<div class="tools"><div class="search">' + icon('search') + '<input id="deal-q" type="search" placeholder="Search business, name, email or phone" aria-label="Search deals" value="' + esc(ui.q) + '" data-input="q"></div>'
@@ -592,7 +588,7 @@
   function fundBox(d) {
     var rows = partnerRounds(d); if (!rows.length) return '';
     var total = rows.reduce(function (t, r) { return t + r.accepted; }, 0);
-    return '<h3>Funding so far</h3><div class="kv">' + rows.map(function (r) { return '<div><span>Round ' + r.round + '</span><b>' + money(r.accepted) + '</b></div>'; }).join('') + '<div><span>Total</span><b style="font-size:24px;font-weight:800">' + money(total) + '</b></div></div>';
+    return '<h3>Funding so far</h3><div class="kv">' + (estCommission(d) ? '<div><span>Estimated commission (' + myRate() + '% of the fee, final when we collect it)</span><b>' + money(estCommission(d)) + '</b></div>' : '') + rows.map(function (r) { return '<div><span>Round ' + r.round + '</span><b>' + money(r.accepted) + '</b></div>'; }).join('') + '<div><span>Total</span><b style="font-size:24px;font-weight:800">' + money(total) + '</b></div></div>';
   }
   function currentDeal() { var id = $('#drawer').getAttribute('data-id'); return state.deals.filter(function (x) { return String(x.id) === id; })[0]; }
 
@@ -647,7 +643,7 @@
       }).join('') + '</tbody></table></div>' : '<div class="card empty"><h3>No partners yet</h3><p>Share your invite link or add someone you know.</p></div>')
       + '<div class="head"><div><h2>Deals from your partners</h2></div></div>'
       + (theirDeals.length ? '<div class="tbl"><table><thead><tr><th>Business</th><th>Stage</th><th>Partner</th><th class="num">Funded</th><th class="num">Your override</th></tr></thead><tbody>' + theirDeals.map(function (d) {
-        return '<tr data-act="open-deal" data-id="' + d.id + '" tabindex="0"><td><span class="main">' + esc(d.company) + '</span><span class="sub">' + esc(d.product) + '</span></td><td>' + stagePill(d) + '</td><td class="hide-sm">' + esc(d.via) + '</td><td class="num hide-sm">' + (d.fundedAmt ? money(d.fundedAmt) : '–') + '</td><td class="num hide-sm">' + (d.commission ? money(d.commission) : '–') + '</td></tr>';
+        return '<tr data-act="open-deal" data-id="' + d.id + '" tabindex="0"><td><span class="main">' + esc(d.company) + '</span><span class="sub">' + esc(d.product) + '</span></td><td>' + stagePill(d) + '</td><td class="hide-sm">' + esc(d.via) + '</td><td class="num hide-sm">' + (d.fundedAmt ? money(d.fundedAmt) : '–') + '</td><td class="num hide-sm">' + (d.commission ? money(d.commission) : estCommission(d) ? money(estCommission(d)) + ' est.' : '–') + '</td></tr>';
       }).join('') + '</tbody></table></div>' : '<div class="card empty"><p>Deals your partners send will show here.</p></div>');
   }
   function openPartnerForm() {
@@ -672,7 +668,7 @@
   function L(id, title, body) { return { id: id, title: title, body: body }; }
   var COURSE = [
     { title: 'Start here', lessons: [
-      L('s2', 'How you get paid', '<p>You earn a share of the fee we collect when a client you referred gets funded.</p><ul><li><b>Standard level:</b> 20% of the fee.</li><li><b>High-volume level:</b> 40% of the fee, when 10 or more of your clients funded the month before.</li><li><b>Override:</b> 2.5% of the fee on funded deals from partners you bring in.</li></ul><p>Each month sets the next one. If 10 clients fund in January, you earn 40% in February. If fewer than 10 fund in February, you are back to 20% in March.</p><p>We usually collect a success fee from the client after funding. Sometimes a lender partner pays us instead, and we will tell you when that happens.</p>'),
+      L('s2', 'How you get paid', '<p>You earn a share of the fee we collect when a client you referred gets funded.</p><ul><li><b>Standard rate:</b> 30% of the fee.</li><li><b>High volume rate:</b> 50% of the fee, for partners approved by our team.</li><li><b>Override:</b> 2.5% of the fee on funded deals from partners you bring in.</li></ul><p>When a client accepts an offer, you see an estimate in your portal. It becomes final when we collect the fee.</p><p>We usually collect a success fee from the client after funding. Sometimes a lender partner pays us instead, and we will tell you when that happens.</p>'),
       L('s1', 'How to use your portal', '<ol><li><b>Home</b> shows your earnings, open deals and anything we need from you.</li><li><b>My Deals</b> lists every client you referred. Click one to see its stage, notes and what is missing.</li><li><b>My Partners</b> tracks people you bring into the program and the deals they send.</li><li><b>My Website</b> gives you your own pages to share, and lets you add your logo and phone number.</li><li><b>Resources</b> has flyers, emails, social posts, the product guide and the deal qualifier.</li></ol>')
     ] },
     { title: 'Module 1: Funding basics', lessons: [
@@ -931,7 +927,7 @@
       + '<div class="field full"><label for="a-company">Company</label><input id="a-company" name="company" value="' + esc(p.company) + '"></div>'
       + '</div><button class="btn primary" style="align-self:flex-start">Save changes</button></form>'
       + '<div class="stack"><section class="card"><div class="card-head"><h2>Your links</h2><span class="pill plain">Code ' + esc(p.code) + '</span></div>' + linkRow('Send business owners here', L.biz, 'al-biz') + linkRow('Invite other partners here', L.partner, 'al-partner') + '</section>'
-      + '<section class="card form-sec"><h2>How you get paid</h2><p>You earn <b>20%</b> of the fee we collect on each client you refer who gets funded. Fund 10 or more clients in a month and you earn <b>40%</b> the next month. Each month sets the rate for the month after it.</p><p>You also earn <b>2.5%</b> on funded deals from partners you bring in.</p><p>We usually collect a success fee from the client after funding. Sometimes a lender partner pays us instead, and we will tell you when that happens.</p><p><a href="' + SITE + '/terms-of-use" target="_blank" rel="noopener">Terms of use</a> · <a href="' + SITE + '/privacy-policy" target="_blank" rel="noopener">Privacy policy</a></p></section>'
+      + '<section class="card form-sec"><h2>How you get paid</h2><p>You earn <b>30%</b> of the fee we collect on each client you refer who gets funded. Partners approved by our team as high volume earn <b>50%</b>.</p><p>You also earn <b>2.5%</b> on funded deals from partners you bring in.</p><p>We usually collect a success fee from the client after funding. Sometimes a lender partner pays us instead, and we will tell you when that happens.</p><p><a href="' + SITE + '/terms-of-use" target="_blank" rel="noopener">Terms of use</a> · <a href="' + SITE + '/privacy-policy" target="_blank" rel="noopener">Privacy policy</a></p></section>'
       + (LIVE ? '<section class="card form-sec"><h2>Your login</h2><p>' + esc(p.email) + '</p><button class="btn small" style="align-self:flex-start" data-act="logout">Log out</button>' + (isTeamUser ? '<label class="switch" style="padding:0"><span>Team view</span><input type="checkbox" data-act="team"' + (state.team ? ' checked' : '') + '></label>' : '') + '</section></div></div>' : '<section class="card form-sec"><h2>Preview tools</h2><label class="switch" style="padding:0"><span>Team view</span><input type="checkbox" data-act="team"' + (state.team ? ' checked' : '') + '></label><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn small" data-act="restore-sample">Load sample data</button><button class="btn small" data-act="clear-sample">Start empty</button></div></section></div></div>');
   }
   var PAGES = { home: homePage, deals: dealsPage, partners: partnersPage, website: websitePage, training: trainingPage, resources: resourcesPage, collateral: collateralPage, emails: emailsPage, social: socialPage, guide: guidePage, qualifier: qualifierPage, account: accountPage };

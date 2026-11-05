@@ -326,7 +326,7 @@
   function emptyState() { var s = sampleState(); s.sample = false; s.deals = []; s.partners = []; s.news = []; s.site = defaultSite(); s.done = []; s.team = false; s.profile = { first: '', last: '', email: '', phone: '', company: '', code: 'TBF-' + (1000 + Math.floor(Math.random() * 9000)) }; return s; }
   function load() { var s = null; try { var raw = localStorage.getItem(KEY); if (raw) s = JSON.parse(raw); } catch (e) {} s = s || sampleState(); s.site = s.site || defaultSite(); s.done = s.done || []; s.news = s.news || []; if (!s.apps) { var fd = s.deals.filter(function (x) { return x.stage === 10 && !x.via; })[0], did = fd ? fd.id : 0; s.apps = fd ? [{ id: 1, deal_id: did, round: 1, lender: 'Sample Bank', product: 'Business card', bureaus: ['EX'], pull_type: 'hard', status: 'approved', approved_amt: 30000, terms: '0% for 12 months', client_decision: 'accepted' }, { id: 2, deal_id: did, round: 1, lender: 'Demo Credit Union', product: 'Personal loan', bureaus: ['EQ', 'TU'], pull_type: 'hard', status: 'denied', approved_amt: 0, terms: '', client_decision: null }, { id: 3, deal_id: did, round: 2, lender: 'Example Card Co', product: 'Business card', bureaus: ['EX'], pull_type: 'hard', status: 'approved', approved_amt: 20000, terms: '', client_decision: null }] : []; s.pays = []; } return s; }
   function save() { if (LIVE) return; try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
-  var sb = LIVE ? supabase.createClient(SB_URL, SB_KEY) : null, ready = !LIVE, userId = null, isTeamUser = false;
+  var sb = LIVE ? supabase.createClient(SB_URL, SB_KEY, { auth: { storageKey: 'tbf-partner-auth' } }) : null, ready = !LIVE, userId = null, isTeamUser = false;
   state = LIVE ? emptyState() : load();
 
   /* ---------- Helpers ---------- */
@@ -359,7 +359,8 @@
   function mapDeal(r) {
     return { id: r.id, created: r.created_at, first: r.first || '', last: r.last || '', email: r.email || '', phone: r.phone || '', mobile: r.mobile || '', company: r.company || '', score: r.score || '', industry: r.industry || '', tib: r.tib || '', sales: r.sales || '', product: r.product || '', partnerId: r.partner_ref || '', refId: r.ref_id || '', stage: r.stage, lossReason: r.loss_reason || '', items: r.items || [], notes: r.notes || [], fundedAmt: +r.funded_amt || 0, fundedDate: r.funded_date || '', commission: +r.commission || 0, paidDate: r.paid_date || '', via: '', feePct: r.fee_pct == null ? 10 : +r.fee_pct, clientNote: r.client_note || '', signedAt: r.agreement_signed_at || '' };
   }
-  function push(fn) { if (LIVE) Promise.resolve(fn()).then(function (r) { if (r && r.error) throw r.error; }).catch(function () { toast('That did not save. Please try again.'); }); }
+  /* Saves go to the server; if the login has lapsed, say so plainly instead of a vague failure. */
+  function push(fn) { if (LIVE) sb.auth.getSession().then(function (s) { if (!s.data.session) { toast('You were logged out, so that did not save. Please refresh and log in again.'); return; } return Promise.resolve(fn()).then(function (r) { if (r && r.error) throw r.error; }).catch(function (e) { toast(e && (e.status === 401 || /jwt/i.test(e.message || '')) ? 'You were logged out, so that did not save. Please refresh and log in again.' : 'That did not save. Please try again.'); }); }); }
   function token() { return sb.auth.getSession().then(function (r) { return r.data.session ? r.data.session.access_token : ''; }); }
   function loadAll() {
     return sb.auth.getUser().then(function (u) {

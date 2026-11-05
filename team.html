@@ -94,7 +94,7 @@
 <script src="shared.js"></script>
 <script>
 (function () {
-  var sb = supabase.createClient(SB_URL, SB_KEY), root = document.getElementById('root'), modal = document.getElementById('modal');
+  var sb = supabase.createClient(SB_URL, SB_KEY, { auth: { storageKey: 'tbf-team-auth' } }), root = document.getElementById('root'), modal = document.getElementById('modal');
   var S = { me: null, deals: [], apps: [], pays: [], partners: [], news: [] }, filter = { q: '', stage: 'open' }, snap = '', toastT;
   var BUREAU = { EX: 'Experian', EQ: 'Equifax', TU: 'TransUnion' };
 

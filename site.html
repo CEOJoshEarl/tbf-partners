@@ -432,7 +432,7 @@
     if (kind === 'partner') {
       var pw = d.password;
       submitLead('signup', ref, d).then(function () {
-        var sb = supabase.createClient(SB_URL, SB_KEY);
+        var sb = supabase.createClient(SB_URL, SB_KEY, { auth: { storageKey: 'tbf-partner-auth' } });
         return sb.auth.signInWithPassword({ email: d.email.trim().toLowerCase(), password: pw }).then(function (r) { if (r.error) throw r.error; location.href = 'index.html#home'; });
       }).catch(failed);
       return;

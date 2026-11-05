@@ -94,7 +94,7 @@
 <script src="shared.js"></script>
 <script>
 (function () {
-  var sb = supabase.createClient(SB_URL, SB_KEY), app = document.getElementById('app'), last = '';
+  var sb = supabase.createClient(SB_URL, SB_KEY, { auth: { storageKey: 'tbf-client-auth' } }), app = document.getElementById('app'), last = '';
   var PHONE = '1-888-994-4548', BUREAU = { EX: 'Experian', EQ: 'Equifax', TU: 'TransUnion' };
   function esc(v) { return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function money(n) { return '$' + Math.round(n || 0).toLocaleString('en-US'); }

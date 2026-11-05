@@ -76,6 +76,13 @@
   .pill.mute { background: var(--soft); color: var(--muted); }
   body { background: #F7F8FB; } .top img { height: 42px; }
   main { max-width: 680px; }
+  .terms { background: var(--soft); border-radius: 8px; padding: 12px; }
+  .terms-label { display: block; font-size: 13px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+  .terms p { margin: 0; font-size: 15px; line-height: 1.5; color: var(--ink); white-space: pre-line; overflow-wrap: anywhere; }
+  .terms p.muted { color: var(--muted); }
+  .view-terms { margin-top: 4px; font-size: 14px; }
+  .view-terms summary { color: var(--brand); cursor: pointer; }
+  .view-terms p { margin: 6px 0 0; white-space: pre-line; overflow-wrap: anywhere; color: var(--ink); }
   @media (max-width: 480px) { .acts .btn { flex: 1; } .hero .big { font-size: 42px; } }
 </style>
 </head>
@@ -145,13 +152,13 @@
     return '<section class="hero"><div><small>' + esc(d.company || 'Your funding') + '</small><div class="big">' + money(F.accepted) + '</div><small>Total funding you have accepted</small></div></section>'
       + '<section class="card next ' + N[3] + '"><span class="eyebrow">' + N[0] + '</span><h2>' + esc(N[1]) + '</h2><p>' + esc(N[2]) + '</p>' + (d.note ? '<p class="team-note"><b>From your team:</b> ' + esc(d.note) + '</p>' : '') + '</section>'
       + (offers.length ? '<section class="stack"><h2 class="sect">Offers for you</h2>' + offers.map(function (a) {
-        return '<div class="offer"><div class="head"><b>' + esc(a.lender) + (a.product ? ' · ' + esc(a.product) : '') + '</b><span class="pill">Round ' + a.round + '</span></div><div class="amt">' + money(a.approved_amt) + '</div>' + (a.terms ? '<p class="muted">' + esc(a.terms) + '</p>' : '')
-          + '<div class="acts"><button class="btn primary" data-decide="accepted" data-id="' + a.id + '" data-amt="' + money(a.approved_amt) + '">Accept this offer</button><button class="btn" data-decide="rejected" data-id="' + a.id + '" data-amt="' + money(a.approved_amt) + '">No thanks</button></div></div>';
+        return '<div class="offer"><div class="head"><b>' + esc(a.lender) + (a.product ? ' · ' + esc(a.product) : '') + '</b><span class="pill">Round ' + a.round + '</span></div><div class="amt">' + money(a.approved_amt) + '</div><div class="terms"><span class="terms-label">Terms</span>' + (a.terms ? '<p>' + esc(a.terms) + '</p>' : '<p class="muted">We are adding the terms for this offer. You can accept it once they are here. Questions? Call ' + PHONE + '.</p>') + '</div>'
+          + '<div class="acts">' + (a.terms ? '<button class="btn primary" data-decide="accepted" data-id="' + a.id + '" data-amt="' + money(a.approved_amt) + '">Accept this offer</button>' : '') + '<button class="btn" data-decide="rejected" data-id="' + a.id + '" data-amt="' + money(a.approved_amt) + '">No thanks</button></div></div>';
       }).join('') + '</section>' : '')
       + '<section class="card"><h2>Your progress</h2>' + (d.stage === 0 ? '<span class="pill bad" style="align-self:flex-start">File closed</span>' : stepper(d.stage)) + '</section>'
       + (F.rounds.length ? '<section class="stack"><h2 class="sect">Where we applied</h2>' + F.rounds.map(function (r) {
         return '<details class="round"' + (r.round === lastR ? ' open' : '') + '><summary><b>Round ' + r.round + '</b><span>' + money(r.accepted) + ' accepted</span></summary>' + r.apps.map(function (a) {
-          return '<div class="row"><div><b>' + esc(a.lender) + '</b><small>' + esc(a.product || '') + (a.product ? ' · ' : '') + esc(bureauLine(a)) + '</small></div><div class="right">' + (a.status === 'approved' ? '<b>' + money(a.approved_amt) + '</b>' : '') + pill(a) + '</div></div>';
+          return '<div class="row"><div><b>' + esc(a.lender) + '</b><small>' + esc(a.product || '') + (a.product ? ' · ' : '') + esc(bureauLine(a)) + '</small>' + (a.status === 'approved' && a.terms ? '<details class="view-terms"><summary>View terms</summary><p>' + esc(a.terms) + '</p></details>' : '') + '</div><div class="right">' + (a.status === 'approved' ? '<b>' + money(a.approved_amt) + '</b>' : '') + pill(a) + '</div></div>';
         }).join('') + (r.fee > 0 ? '<div class="fee"><span>Fee for this round (' + F.pct + '%): <b>' + money(r.fee) + '</b></span>' + (r.paid ? '<span class="pill good">Paid</span>' : '<span class="pill warn">Due</span>') + '</div>' : '') + '</details>';
       }).join('') + '</section><section class="card"><h2>Credit inquiries</h2><p class="muted">One for each hard pull, approved or denied.</p><div class="tiles">' + ['EX', 'EQ', 'TU'].map(function (b) { return '<div class="tile"><span>' + BUREAU[b] + '</span><b>' + F.inquiries[b] + '</b></div>'; }).join('') + '</div></section>' : '');
   }
@@ -190,7 +197,7 @@
     else if (t.id === 'logout') sb.auth.signOut().then(function () { showLogin(); });
     else if (t.getAttribute && t.getAttribute('data-decide')) {
       var dec = t.getAttribute('data-decide'), amt = t.getAttribute('data-amt');
-      if (!window.confirm(dec === 'accepted' ? 'Accept this ' + amt + ' offer? It will be added to your total, and our fee applies to it.' : 'Pass on this ' + amt + ' offer?')) return;
+      if (!window.confirm(dec === 'accepted' ? 'Accept this ' + amt + ' offer on the terms shown? It will be added to your total, and our fee applies to it.' : 'Pass on this ' + amt + ' offer?')) return;
       t.disabled = true;
       sb.auth.getSession().then(function (r) { return clientApi({ action: 'decide', id: +t.getAttribute('data-id'), decision: dec }, r.data.session.access_token); }).then(function () { last = ''; return load(); }).catch(function (x) { t.disabled = false; window.alert(x.message); });
     }

@@ -117,7 +117,7 @@
     logos();
   }
   function showCode(email) {
-    app.innerHTML = '<form class="card auth" id="code" data-email="' + esc(email) + '"><img data-logo alt="The Business Funders"><h1>Check your email</h1><p class="muted">If ' + esc(email) + ' is on file with us, a 6-digit code is on its way. It lasts 15 minutes. Nothing after a few minutes? Check spam or call ' + PHONE + '.</p>'
+    app.innerHTML = '<form class="card auth" id="code" data-email="' + esc(email) + '"><img data-logo alt="The Business Funders"><h1>Check your email</h1><p class="muted">If ' + esc(email) + ' is on file with us, a 6-digit code is on its way. It lasts 15 minutes. Nothing after a few minutes? Check spam or text ' + PHONE + '.</p>'
       + '<div class="field"><label for="c">6-digit code</label><input id="c" name="code" inputmode="numeric" autocomplete="one-time-code" required maxlength="6"></div>'
       + '<div class="field"><label for="p">Choose a password (at least 10 characters)</label><input id="p" name="password" type="password" autocomplete="new-password" required minlength="10"></div>'
       + '<p class="err" id="msg" hidden></p><button class="btn primary">Open my portal</button><p class="muted"><button type="button" class="link" id="to-setup">Start over</button></p></form>';
@@ -154,8 +154,8 @@
     if (offers.length) return ['Your turn', 'Review ' + (offers.length === 1 ? 'your new offer' : 'your ' + offers.length + ' new offers'), 'Choose accept or no thanks below. Nothing is final until you decide.', 'warn'];
     if (due) return ['Your turn', 'Pay your ' + money(due.fee) + ' round ' + due.round + ' fee', 'Due when your card arrives or your loan is deposited' + (due.dueBy ? ', and no later than ' + fmt(due.dueBy) : '') + '. Pay by your payment link, Zelle, Cash App or Venmo. Round ' + (due.round + 1) + ' begins once we receive it.', 'warn'];
     if (d.stage !== 0 && d.stage !== 10 && !d.application_received && !d.apps.length) return ['Your turn', 'Complete your Business Funding Application', 'We need it to prepare your file. It asks for your voided check, so use the account where you want your funds deposited.', 'warn', APPLY_URL];
-    if (d.stage === 0) return ['Update', 'This file is closed', 'Questions? Call us at ' + PHONE + '.', ''];
-    if (d.stage === 10) return ['All set', 'You are funded', 'Thank you for working with us. Call ' + PHONE + ' anytime.', 'good'];
+    if (d.stage === 0) return ['Update', 'This file is closed', 'Questions? Text us at ' + PHONE + '.', ''];
+    if (d.stage === 10) return ['All set', 'You are funded', 'Thank you for working with us. Text ' + PHONE + ' anytime.', 'good'];
     return ['Our turn', 'We are working on your file', 'Nothing is needed from you right now. We will email you when an offer comes in.', ''];
   }
   function dealHtml(d) {
@@ -163,7 +163,7 @@
     return '<section class="hero"><div><small>' + esc(d.company || 'Your funding') + '</small><div class="big">' + money(F.accepted) + '</div><small>Total funding you have accepted</small></div></section>'
       + '<section class="card next ' + N[3] + '"><span class="eyebrow">' + N[0] + '</span><h2>' + esc(N[1]) + '</h2><p>' + esc(N[2]) + '</p>' + (N[4] ? '<a class="btn primary" style="align-self:flex-start" href="' + N[4] + '" target="_blank" rel="noopener">Complete my application</a>' : '') + (d.note ? '<p class="team-note"><b>From your team:</b> ' + esc(d.note) + '</p>' : '') + '</section>'
       + (offers.length ? '<section class="stack"><h2 class="sect">Offers for you</h2>' + offers.map(function (a) {
-        return '<div class="offer"><div class="head"><b>' + esc(a.lender) + (a.product ? ' · ' + esc(a.product) : '') + '</b><span class="pill">Round ' + a.round + '</span></div><div class="amt">' + money(a.approved_amt) + '</div><div class="terms"><span class="terms-label">Terms</span>' + (a.terms ? '<p>' + esc(a.terms) + '</p>' : '<p class="muted">We are adding the terms for this offer. You can accept it once they are here. Questions? Call ' + PHONE + '.</p>') + '</div>'
+        return '<div class="offer"><div class="head"><b>' + esc(a.lender) + (a.product ? ' · ' + esc(a.product) : '') + '</b><span class="pill">Round ' + a.round + '</span></div><div class="amt">' + money(a.approved_amt) + '</div><div class="terms"><span class="terms-label">Terms</span>' + (a.terms ? '<p>' + esc(a.terms) + '</p>' : '<p class="muted">We are adding the terms for this offer. You can accept it once they are here. Questions? Text ' + PHONE + '.</p>') + '</div>'
           + '<div class="acts">' + (a.terms ? '<button class="btn primary" data-decide="accepted" data-id="' + a.id + '" data-amt="' + money(a.approved_amt) + '">Accept this offer</button>' : '') + '<button class="btn" data-decide="rejected" data-id="' + a.id + '" data-amt="' + money(a.approved_amt) + '">No thanks</button></div></div>';
       }).join('') + '</section>' : '')
       + '<section class="card"><h2>Your progress</h2>' + (d.stage === 0 ? '<span class="pill bad" style="align-self:flex-start">File closed</span>' : stepper(d, offers)) + '</section>'
@@ -186,8 +186,8 @@
     {
       document.getElementById('top').hidden = false;
       var name = data[0] && data[0].first ? ', ' + esc(data[0].first) : '';
-      app.innerHTML = '<div><h1>Hi' + name + '</h1></div>' + (data.length ? data.map(dealHtml).join('') : '<section class="card"><h2>No funding file found</h2><p>We could not find a file under this login. Please call ' + PHONE + ' and we will sort it out.</p></section>')
-        + '<p class="muted">Questions? Call ' + PHONE + ' or email partnership@thebusinessfunders.com, Monday to Friday, 10am to 5pm EST.</p>';
+      app.innerHTML = '<div><h1>Hi' + name + '</h1></div>' + (data.length ? data.map(dealHtml).join('') : '<section class="card"><h2>No funding file found</h2><p>We could not find a file under this login. Please text ' + PHONE + ' and we will sort it out.</p></section>')
+        + '<p class="muted">Questions? Text ' + PHONE + ' or email partnership@thebusinessfunders.com, Monday to Friday, 10am to 5pm EST.</p>';
       logos();
     }
   }
@@ -198,7 +198,7 @@
     var f = e.target, btn = f.querySelector('button.primary'); if (btn) btn.disabled = true;
     function back() { if (btn) btn.disabled = false; }
     if (f.id === 'login') sb.auth.signInWithPassword({ email: f.email.value.trim().toLowerCase(), password: f.password.value }).then(function (r) { if (r.error) { back(); err('That email and password did not match. First time here? Set up your login below.'); } else enter(); });
-    else if (f.id === 'setup') { var em = f.email.value.trim().toLowerCase(); clientApi({ action: 'start', email: em }).then(function (j) { if (j.needs_agreement) { back(); err('Please sign your funding agreement first. Your link is in your email, or call ' + PHONE + '.'); } else showCode(em); }).catch(function (x) { back(); err(x.message); }); }
+    else if (f.id === 'setup') { var em = f.email.value.trim().toLowerCase(); clientApi({ action: 'start', email: em }).then(function (j) { if (j.needs_agreement) { back(); err('Please sign your funding agreement first. Your link is in your email, or text ' + PHONE + '.'); } else showCode(em); }).catch(function (x) { back(); err(x.message); }); }
     else if (f.id === 'code') { var email = f.getAttribute('data-email'), pw = f.password.value; clientApi({ action: 'verify', email: email, code: f.code.value.trim(), password: pw }).then(function () { return sb.auth.signInWithPassword({ email: email, password: pw }); }).then(function (r) { if (r.error) throw r.error; return enter(); }).catch(function (x) { back(); err(x.message); }); }
   });
   document.addEventListener('click', function (e) {

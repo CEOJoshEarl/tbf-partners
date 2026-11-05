@@ -150,12 +150,12 @@
   var cfg = defaultSite(), prof = null, phone = TBF_PHONE, email = TBF_EMAIL, WL = false, BRAND = 'The Business Funders';
 
   var EN = {
-    bizTag: 'Get started today and speak with an advisor', partnerTag: 'Partner with The Business Funders', call: 'Call now',
+    bizTag: 'Get started today and speak with an advisor', partnerTag: 'Partner with The Business Funders', call: 'Text us',
     bizH1: 'Small Business Loans', bizSub: 'Financing options for your business:', 'list': ['SBA Loans', 'Lines of Credit', 'Working Capital', 'Equipment Financing', 'Accounts Receivable Financing', 'Credit Card Stacking', 'Commercial Real Estate', 'And more'],
     formT: 'See your options', formS: 'Takes about a minute. An advisor follows up with you.',
     first: 'First name', last: 'Last name', company: 'Business name', email: 'Email address', bizPhone: 'Business phone', mobile: 'Mobile phone', score: 'Credit score', industry: 'Industry', tib: 'Time in business', sales: 'Monthly sales', product: 'Product', state: 'State', web: 'Do you have a website?', yes: 'Yes', no: 'No', choose: 'Choose one', title: 'Job title',
     consent1: 'By checking this box I agree to the', terms: 'terms of use', and: 'and', privacy: 'privacy policy', consent2: ', and to receive SMS, email and phone communication.',
-    apply: 'Apply now', sending: 'Sending...', err: 'Required', errSend: 'That did not send. Please try again or call us.',
+    apply: 'Apply now', sending: 'Sending...', err: 'Required', errSend: 'That did not send. Please try again or text us.',
     doneT: 'Thank you!', doneS: 'We have your information. An advisor will reach out soon.',
     whatH: 'What is a small business loan?', whatP: 'A small business loan is any funding made for a business, whether it is new or established. Different loans fit different goals, and how each one works depends on the type.',
     whyCards: [['Simple application', 'One short form. An advisor takes it from there.'], ['A network of lenders', 'We match you with lenders we partner with, using relationships we already have.'], ['Options for many credit profiles', 'Programs start at a 500 credit score, and some have no credit minimum.'], ['You choose', 'Compare your offers and accept only the ones that work for you.']],
@@ -170,17 +170,17 @@
     pFormT: 'Join the partner program', pFormS: 'Create your login and go straight to your partner portal.', join: 'Create my account',
     pDoneS: 'We have your application. Our partnership team will reach out soon.',
     howH: 'How it works', howS: 'Three simple steps', how: [['Share your client', 'Get their name, phone and email and send them over.'], ['We take it from there', 'Our team contacts them and works the deal.'], ['Earn commission', 'You earn commission when the referral funds.']],
-    qH: 'Have questions?', qP: 'Our partnership team can walk you through how the program works.', qB: 'Speak with an advisor',
+    qH: 'Have questions?', qP: 'Our partnership team can walk you through how the program works.', qB: 'Text an advisor',
     appT: 'Funding application', appS: 'Fill this out online, or print it and send it to your advisor.', print: 'Print blank application', secBiz: 'Business', secOwner: 'Owner', secFund: 'Funding request', legal: 'Legal business name', dba: 'DBA (if any)', address: 'Business address', city: 'City', zip: 'ZIP', entity: 'Business type', start: 'Business start date', ownerName: 'Owner full name', ownerPct: 'Ownership %', amount: 'Amount requested', use: 'What is the money for?', monthly: 'Average monthly sales', secure: 'Do not enter your Social Security number or bank login here. Your advisor will collect those securely.', submitApp: 'Submit application',
     password: 'Create a password (10+ characters)', haveAcct: 'Already a partner?', logIn: 'Log in', tooShort: 'Please use at least 10 characters.', feeNote: 'A success fee applies once you are funded. The amount depends on your type of funding, and your advisor will go over it with you before you sign.', rights: 'All rights reserved.', backPortal: 'Preview of your partner website.', back: 'Back to portal', es: 'Español', en: 'English'
   };
   var ES = {
-    bizTag: 'Comience hoy y hable con un asesor', partnerTag: 'Asóciese con The Business Funders', call: 'Llame ahora',
+    bizTag: 'Comience hoy y hable con un asesor', partnerTag: 'Asóciese con The Business Funders', call: 'Envíenos un texto',
     bizH1: 'Préstamos para pequeñas empresas', bizSub: 'Opciones de financiamiento para su negocio:', 'list': ['Préstamos SBA', 'Líneas de crédito', 'Capital de trabajo', 'Financiamiento de equipos', 'Financiamiento de cuentas por cobrar', 'Combinación de tarjetas de crédito', 'Bienes raíces comerciales', 'Y más'],
     formT: 'Vea sus opciones', formS: 'Toma alrededor de un minuto. Un asesor se comunicará con usted.',
     first: 'Nombre', last: 'Apellido', company: 'Nombre del negocio', email: 'Correo electrónico', bizPhone: 'Teléfono del negocio', mobile: 'Teléfono móvil', score: 'Puntaje de crédito', industry: 'Industria', tib: 'Tiempo en el negocio', sales: 'Ventas mensuales', product: 'Producto', state: 'Estado', web: '¿Tiene sitio web?', yes: 'Sí', no: 'No', choose: 'Elija uno', title: 'Cargo',
     consent1: 'Al marcar esta casilla acepto los', terms: 'términos de uso', and: 'y la', privacy: 'política de privacidad', consent2: ', y recibir comunicaciones por SMS, correo electrónico y teléfono.',
-    apply: 'Solicitar ahora', sending: 'Enviando...', err: 'Obligatorio', errSend: 'No se pudo enviar. Inténtelo de nuevo o llámenos.',
+    apply: 'Solicitar ahora', sending: 'Enviando...', err: 'Obligatorio', errSend: 'No se pudo enviar. Inténtelo de nuevo o envíenos un texto.',
     doneT: '¡Gracias!', doneS: 'Recibimos su información. Un asesor se comunicará pronto.',
     whatH: '¿Qué es un préstamo para pequeñas empresas?', whatP: 'Un préstamo para pequeñas empresas es cualquier financiamiento creado para un negocio, nuevo o establecido. Cada tipo de préstamo sirve para metas distintas y funciona de manera diferente.',
     whyCards: [['Solicitud sencilla', 'Un formulario corto. Un asesor se encarga del resto.'], ['Una red de prestamistas', 'Lo conectamos con prestamistas aliados, usando relaciones que ya tenemos.'], ['Opciones para muchos perfiles de crédito', 'Los programas empiezan con un puntaje de 500, y algunos no tienen mínimo.'], ['Usted decide', 'Compare sus ofertas y acepte solo las que le convienen.']],
@@ -195,7 +195,7 @@
     pFormT: 'Únase al programa de socios', pFormS: 'Cree su acceso y entre directamente a su portal de socios.', join: 'Crear mi cuenta',
     pDoneS: 'Recibimos su solicitud. Nuestro equipo de socios se comunicará pronto.',
     howH: 'Cómo funciona', howS: 'Tres pasos simples', how: [['Comparta su cliente', 'Obtenga su nombre, teléfono y correo y envíenoslo.'], ['Nosotros nos encargamos', 'Nuestro equipo lo contacta y trabaja el caso.'], ['Gane comisión', 'Usted gana comisión cuando el referido recibe los fondos.']],
-    qH: '¿Tiene preguntas?', qP: 'Nuestro equipo de socios puede explicarle cómo funciona el programa.', qB: 'Hablar con un asesor',
+    qH: '¿Tiene preguntas?', qP: 'Nuestro equipo de socios puede explicarle cómo funciona el programa.', qB: 'Envíe un texto a un asesor',
     appT: 'Solicitud de financiamiento', appS: 'Complétela en línea o imprímala y envíela a su asesor.', print: 'Imprimir solicitud en blanco', secBiz: 'Negocio', secOwner: 'Propietario', secFund: 'Solicitud de fondos', legal: 'Nombre legal del negocio', dba: 'Nombre comercial (si aplica)', address: 'Dirección del negocio', city: 'Ciudad', zip: 'Código postal', entity: 'Tipo de negocio', start: 'Fecha de inicio', ownerName: 'Nombre completo del propietario', ownerPct: '% de propiedad', amount: 'Monto solicitado', use: '¿Para qué es el dinero?', monthly: 'Ventas mensuales promedio', secure: 'No ingrese su número de Seguro Social ni acceso bancario aquí. Su asesor los recopilará de forma segura.', submitApp: 'Enviar solicitud',
     password: 'Cree una contraseña (10+ caracteres)', haveAcct: '¿Ya es socio?', logIn: 'Iniciar sesión', tooShort: 'Use al menos 10 caracteres.', feeNote: 'Se aplica una tarifa de éxito una vez que reciba los fondos. El monto depende del tipo de financiamiento, y su asesor lo revisará con usted antes de firmar.', rights: 'Todos los derechos reservados.', backPortal: 'Vista previa de su sitio de socio.', back: 'Volver al portal', es: 'Español', en: 'English'
   };
@@ -322,7 +322,7 @@
     var logos = WL ? '<div class="logos">' + (cfg.logo ? '<img src="' + esc(cfg.logo) + '" alt="' + esc(BRAND) + '">' : '<b style="font-size:24px;color:var(--ink);font-weight:800">' + esc(BRAND) + '</b>') + '</div>'
       : '<div class="logos">' + (cfg.logo ? '<img src="' + esc(cfg.logo) + '" alt="' + esc(prof && prof.company || 'Partner') + '"><span>in partnership with</span>' : '') + '<img src="' + LOGO + '" alt="The Business Funders"></div>';
     return (preview ? '<div class="preview"><div class="in">' + esc(T.backPortal) + ' <a href="index.html#website">' + esc(T.back) + '</a></div></div>' : '')
-      + '<div class="top"><div class="in"><span>' + esc(T.call) + ' <a href="tel:' + esc(phone.replace(/[^0-9+]/g, '')) + '"><b>' + esc(phone) + '</b></a></span><a href="' + link(page, lang === 'es' ? 'en' : 'es') + '" style="font-weight:600;text-decoration:underline">' + (lang === 'es' ? T.en : T.es) + '</a></div></div>'
+      + '<div class="top"><div class="in"><span>' + esc(T.call) + ' <a href="sms:+' + esc(phone.replace(/[^0-9]/g, '')) + '"><b>' + esc(phone) + '</b></a></span><a href="' + link(page, lang === 'es' ? 'en' : 'es') + '" style="font-weight:600;text-decoration:underline">' + (lang === 'es' ? T.en : T.es) + '</a></div></div>'
       + '<header><div class="in">' + logos + '<span class="tag">' + esc(tag) + '</span></div></header>' + body
       + '<footer><div class="in"><span>' + esc(phone) + ' · ' + esc(email) + ' · ' + TBF_HOURS + '</span><span><a href="' + SITE + '/terms-of-use" target="_blank" rel="noopener">' + esc(T.terms) + '</a> · <a href="' + SITE + '/privacy-policy" target="_blank" rel="noopener">' + esc(T.privacy) + '</a></span><span>© ' + new Date().getFullYear() + ' ' + esc(BRAND) + '. ' + esc(T.rights) + '</span></div></footer>';
   }
@@ -358,7 +358,7 @@
       + inp('first', T.first) + inp('last', T.last) + inp('phone', T.mobile, 'tel') + inp('email', T.email, 'email') + inp('company', T.company) + inp('title', T.title) + sel('state', T.state, US_STATES) + inp('bizPhone', T.bizPhone, 'tel', '', false) + sel('industry', T.industry, INDUSTRIES, 'full') + inp('password', T.password, 'password', 'full')
       + '</div>' + hp() + consent() + '<button class="btn">' + esc(T.join) + '</button><p class="note" style="text-align:center">' + esc(T.haveAcct) + ' <a href="index.html">' + esc(T.logIn) + '</a></p></form></div></section>'
       + '<section class="band"><div class="in"><div class="center"><h2>' + esc(T.howH) + '</h2><p>' + esc(T.howS) + '</p></div>' + cards(T.how, 'c3', true) + '</div></section>'
-      + '<section class="band cta"><div class="in"><h2>' + esc(T.qH) + '</h2><p>' + esc(T.qP) + '</p><a class="btn" href="tel:' + esc(phone.replace(/[^0-9+]/g, '')) + '">' + esc(T.qB) + ': ' + esc(phone) + '</a></div></section>');
+      + '<section class="band cta"><div class="in"><h2>' + esc(T.qH) + '</h2><p>' + esc(T.qP) + '</p><a class="btn" href="sms:+' + esc(phone.replace(/[^0-9]/g, '')) + '">' + esc(T.qB) + ': ' + esc(phone) + '</a></div></section>');
   }
   function applyPage() {
     return shell(T.bizTag, '<section class="band soft"><div class="in wide"><form class="form" id="lead-form" data-kind="apply" novalidate><h2>' + esc(T.appT) + '</h2><p>' + esc(T.appS) + '</p>'

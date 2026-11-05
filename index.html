@@ -481,7 +481,7 @@
     if (packageDone()) return '';
     return '<section class="card form-sec"><div class="card-head" style="margin:0"><h2>Sign your Partner Package</h2><span class="pill warn">Needed to get paid</span></div>'
       + '<p>We emailed it to you when you signed up. It has your agreement and W-9, and we need it signed before we can pay you.</p>'
-      + '<p style="color:var(--muted);font-size:15px">Don\'t see it? Check your spam folder or call 1-888-994-4548.</p>'
+      + '<p style="color:var(--muted);font-size:15px">Don\'t see it? Check your spam folder or text 1-888-994-4548.</p>'
       + '<button class="btn small" data-act="package-done" style="align-self:flex-start">I signed it</button></section>';
   }
   function levelCard() {
@@ -983,7 +983,7 @@
   document.addEventListener('submit', function (e) {
     e.preventDefault();
     var f = e.target, kind = f.getAttribute('data-form'), d;
-    if (kind === 'login') { sb.auth.signInWithPassword({ email: f.email.value.trim().toLowerCase(), password: f.password.value }).then(function (r) { if (r.error) { showLoginErr('That email and password do not match.'); return; } return enter(); }).catch(function () { showLoginErr('We could not log you in. Please call us.'); }); return; }
+    if (kind === 'login') { sb.auth.signInWithPassword({ email: f.email.value.trim().toLowerCase(), password: f.password.value }).then(function (r) { if (r.error) { showLoginErr('That email and password do not match.'); return; } return enter(); }).catch(function () { showLoginErr('We could not log you in. Please text us.'); }); return; }
     if (kind === 'newpass') { if (f.password.value.length < 10) { showLoginErr('Please use at least 10 characters.'); return; } sb.auth.updateUser({ password: f.password.value }).then(function (r) { if (r.error) { showLoginErr('That did not save. Please try the link again.'); return; } return enter(); }); return; }
     if (kind === 'lead') {
       if (!validLead(f)) return;

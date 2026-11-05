@@ -68,7 +68,7 @@ function siteUrl(page, lang, code) {
 /* Sign-ups and leads go to the server, which saves them and passes them to GHL. */
 function submitLead(kind, ref, data, token) {
   return fetch(SB_URL + '/functions/v1/submit', { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: SB_KEY, Authorization: 'Bearer ' + (token || SB_KEY) }, body: JSON.stringify(Object.assign({}, data, { kind: kind, ref: ref })) })
-    .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok) { var e = new Error(j.error || 'That did not send. Please call us.'); e.status = r.status; throw e; } return j; }); });
+    .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok) { var e = new Error(j.error || 'That did not send. Please text us.'); e.status = r.status; throw e; } return j; }); });
 }
 /* One deal's funding, worked out the same way for team and client. Inquiries: every hard pull counts, approved or denied. */
 function fundingSummary(apps, payments, feePct) {
@@ -89,7 +89,7 @@ function fundingSummary(apps, payments, feePct) {
 }
 function clientApi(body, token) {
   return fetch(SB_URL + '/functions/v1/client', { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: SB_KEY, Authorization: 'Bearer ' + (token || SB_KEY) }, body: JSON.stringify(body) })
-    .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok) { var e = new Error(j.error || 'That did not go through. Please call us.'); e.status = r.status; throw e; } return j; }); });
+    .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok) { var e = new Error(j.error || 'That did not go through. Please text us.'); e.status = r.status; throw e; } return j; }); });
 }
 /* The first thing on the partner and client logins: who are you? Each role has its own site. */
 function roleChooser(active) {

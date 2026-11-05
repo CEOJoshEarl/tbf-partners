@@ -81,7 +81,8 @@
   .terms p { margin: 0; font-size: 15px; line-height: 1.5; color: var(--ink); white-space: pre-line; overflow-wrap: anywhere; }
   .terms p.muted { color: var(--muted); }
   .view-terms { margin-top: 4px; font-size: 14px; }
-  .view-terms summary { color: var(--brand); cursor: pointer; }
+  .view-terms summary { display: inline-block; padding: 0; color: var(--brand); cursor: pointer; font-weight: 400; }
+  .view-terms summary::after { content: none; display: none; }
   .view-terms p { margin: 6px 0 0; white-space: pre-line; overflow-wrap: anywhere; color: var(--ink); }
   @media (max-width: 480px) { .acts .btn { flex: 1; } .hero .big { font-size: 42px; } }
 </style>

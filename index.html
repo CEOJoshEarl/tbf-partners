@@ -860,9 +860,12 @@
     function tracking(key, title) { var t = s.tracking[key]; return '<details class="lesson" style="padding:14px 18px"><summary style="font-size:16px">' + title + '</summary><div class="fields" style="margin-top:12px">'
       + txt('t-' + key + '-pixel', 'Tracking pixel URL', t.pixel, 'https://') + txt('t-' + key + '-ga', 'Google Analytics ID', t.ga, 'G-XXXXXXX') + txt('t-' + key + '-uet', 'Microsoft UET tag ID', t.uet, '') + txt('t-' + key + '-fb', 'Facebook pixel ID', t.fb, '') + '</div></details>'; }
     function txt(id, label, val, ph) { return '<div class="field"><label for="' + id + '">' + label + '</label><input id="' + id + '" name="' + id + '" value="' + esc(val) + '" placeholder="' + esc(ph || '') + '"></div>'; }
-    return '<div class="head"><div><h1>My Website</h1><p>You get two ready-made pages with The Business Funders branding. Anyone who applies through them is tied to you automatically.</p></div></div>'
+    return '<div class="head"><div><h1>My Website</h1><p>Your own pages for business owners and new partners, in English and Spanish. Choose co-branded or white label below. Anyone who applies through them is tied to you automatically.</p></div></div>'
       + '<section class="card"><div class="card-head"><h2>Your pages</h2><span class="pill plain">Code ' + esc(code) + '</span></div>' + row('For business owners', 'biz', 'en') + row('For business owners, Spanish', 'biz', 'es') + row('For new partners', 'partner', 'en') + row('For new partners, Spanish', 'partner', 'es') + row('Full funding application', 'apply', 'en') + '</section>'
-      + '<form class="card form-sec" data-form="site"><h2>Website settings</h2><p style="color:var(--muted)">These show on your pages and flyers. Leave a box blank to use our main phone and email.</p><div class="fields">'
+      + '<form class="card form-sec" data-form="site"><h2>Website settings</h2><p style="color:var(--muted)">These show on your pages and flyers. Leave a box blank to use our main phone and email.</p>'
+      + '<fieldset style="border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:10px"><legend style="font-weight:700;color:var(--ink);padding:0 6px">Branding</legend>'
+      + '<label class="tick"><input type="radio" name="brand" value="cobrand"' + (s.brand !== 'whitelabel' ? ' checked' : '') + '><span><b>Co-branded.</b> Your logo next to The Business Funders logo.</span></label>'
+      + '<label class="tick"><input type="radio" name="brand" value="whitelabel"' + (s.brand === 'whitelabel' ? ' checked' : '') + '><span><b>White label.</b> Only your logo, business name and contact info. Upload your logo below; without one, your business name shows instead.</span></label></fieldset><div class="fields">'
       + img('logo', 'Your logo', s.logo) + img('favicon', 'Browser tab icon', s.favicon)
       + txt('s-phone', 'Contact phone', s.phone) + txt('s-customPhone', 'Custom phone (shown first)', s.customPhone) + txt('s-email', 'Email', s.email) + '</div>'
       + tracking('biz', 'Tracking for your business owner page') + tracking('partner', 'Tracking for your partner page')
@@ -1013,6 +1016,7 @@
     } else if (kind === 'news') {
       var nt = f.text.value.trim(); if (!nt) return; state.news.push({ at: new Date().toISOString(), text: nt }); save(); push(function () { return sb.from('news').insert({ text: nt }); }); rerenderKeep(); toast('Posted');
     } else if (kind === 'site') {
+      state.site.brand = f.brand.value === 'whitelabel' ? 'whitelabel' : 'cobrand';
       ['phone', 'customPhone', 'email'].forEach(function (n) { state.site[n] = f['s-' + n].value.trim(); });
       ['biz', 'partner'].forEach(function (k) { ['pixel', 'ga', 'uet', 'fb'].forEach(function (n) { state.site.tracking[k][n] = f['t-' + k + '-' + n].value.trim(); }); });
       save(); push(function () { return sb.from('partners').update({ site: state.site }).eq('id', userId); }); toast('Saved');

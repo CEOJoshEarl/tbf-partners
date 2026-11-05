@@ -234,18 +234,26 @@
       + (d.stage === 0 ? '<div class="field"><label for="lr">Reason (the partner can see this)</label><input id="lr" value="' + esc(d.loss_reason) + '"></div>' : '')
       + '<div class="field"><label for="cn">Message the client sees</label><input id="cn" value="' + esc(d.client_note) + '" placeholder="Example: Round 2 is with the lenders now."></div>'
       + '<div class="field"><label for="fp">Fee %, this client</label><input id="fp" inputmode="decimal" value="' + esc(d.fee_pct) + '"></div>'
-      + '<p class="sub">Contract: ' + (d.agreement_signed_at ? '<b style="color:var(--good)">Signed ' + date(d.agreement_signed_at) + '</b>' : 'Not signed yet') + '</p><p class="sub">Application: ' + (d.application_received_at ? '<b style="color:var(--good)">Received ' + date(d.application_received_at) + '</b> <button class="link" data-a="app-unreceived">Undo</button>' : 'Not received <button class="link" data-a="app-received">Mark received</button>') + '</p></section>'
+      + '<p class="sub">Contract: ' + (d.agreement_signed_at ? '<b style="color:var(--good)">Signed ' + date(d.agreement_signed_at) + '</b>' : 'Not signed yet') + ' <button class="link" data-a="resend-client">' + (d.agreement_signed_at ? 'Send a new copy' : 'Resend Client Packet') + '</button></p><p class="sub">Application: ' + (d.application_received_at ? '<b style="color:var(--good)">Received ' + date(d.application_received_at) + '</b> <button class="link" data-a="app-unreceived">Undo</button>' : 'Not received <button class="link" data-a="app-received">Mark received</button>') + '</p></section>'
       + '<section class="card"><h2>Ask the partner</h2><form class="inline" id="f-item"><div class="field"><label for="it">What do you need?</label><input id="it" name="text" placeholder="Example: 4 months of bank statements" required></div><button class="btn">Ask</button></form>' + items.map(function (it, i) { return '<label class="tick"><input type="checkbox" data-item="' + i + '"' + (it.done ? ' checked' : '') + '><span' + (it.done ? ' style="text-decoration:line-through;color:var(--muted)"' : '') + '>' + esc(it.text) + '</span></label>'; }).join('') + '</section>'
       + '<section class="card"><h2>Contact</h2><div class="kv"><span>Name</span><b>' + esc((d.first + ' ' + d.last).trim()) + '</b><span>Email</span><b>' + esc(d.email) + '</b><span>Phone</span><b>' + esc(d.phone) + '</b><span>Sales</span><b>' + esc(d.sales || '–') + ' a month</b><span>Score</span><b>' + esc(d.score || '–') + '</b><span>In business</span><b>' + esc(d.tib || '–') + '</b><span>Industry</span><b>' + esc(d.industry || '–') + '</b><span>State</span><b>' + esc(d.state || '–') + '</b></div></section></div></div>';
   }
   function estFor(d, F) { var p = partnerOf(d.partner_code); if (!p) return 0; return Math.max(0, Math.round(F.accepted * (d.fee_pct == null ? 10 : +d.fee_pct) / 100 * (p.high_volume ? 50 : 30) / 100 - (+d.commission || 0))); }
   function partnersPage() {
-    var rows = S.partners.map(function (p) {
+    function row(p) {
       var ds = S.deals.filter(function (d) { return d.partner_code === p.code; });
       var funded = ds.reduce(function (t, d) { return t + (+d.funded_amt || 0); }, 0), earned = ds.reduce(function (t, d) { return t + (+d.commission || 0); }, 0);
-      return '<tr><td><b>' + esc((p.first + ' ' + p.last).trim()) + '</b><small>' + esc(p.company || '') + '</small></td><td>' + esc(p.code) + '<small>' + (p.referred_by ? 'Under ' + esc(partnerName(p.referred_by)) : 'Direct') + '</small></td><td>' + esc(p.email) + '<small>' + esc(p.phone || '') + '</small></td><td class="num">' + ds.length + '</td><td class="num">' + money(funded) + '</td><td class="num"><b>' + money(earned) + '</b></td><td><label class="tick"><input type="checkbox" data-a="hv" data-id="' + esc(p.id) + '"' + (p.high_volume ? ' checked' : '') + '><span>' + (p.high_volume ? '50%' : '30%') + '</span></label></td></tr>';
-    }).join('');
-    return '<div class="head"><div><h1>Partners</h1><p class="sub">' + S.partners.length + ' signed up.</p></div><button class="btn primary" data-a="add-partner">Add partner</button></div><div class="tablewrap">' + (rows ? '<table><thead><tr><th>Partner</th><th>Code</th><th>Contact</th><th class="num">Clients</th><th class="num">Funded</th><th class="num">Commission</th><th>High volume</th></tr></thead><tbody>' + rows + '</tbody></table>' : '<p class="empty" style="padding:16px">No partners yet.</p>') + '</div>';
+      var now = new Date(), lastStart = new Date(now.getFullYear(), now.getMonth() - 1, 1), thisStart = new Date(now.getFullYear(), now.getMonth(), 1);
+      var lastMonth = ds.filter(function (d) { var f = d.funded_date && new Date(d.funded_date); return f && f >= lastStart && f < thisStart; }).length;
+      var off = !!p.removed_at;
+      return '<tr' + (off ? ' style="opacity:.6"' : '') + '><td><b>' + esc((p.first + ' ' + p.last).trim()) + '</b><small>' + esc(p.company || '') + (off ? ' · Removed ' + date(p.removed_at) : '') + '</small></td><td>' + esc(p.code) + '<small>' + (p.referred_by ? 'Under ' + esc(partnerName(p.referred_by)) : 'Direct') + '</small></td><td>' + esc(p.email) + '<small>' + esc(p.phone || '') + '</small></td><td class="num">' + ds.length + '</td><td class="num">' + money(funded) + '</td><td class="num"><b>' + money(earned) + '</b></td>'
+        + '<td>' + (off ? '–' : '<label class="tick"><input type="checkbox" data-a="hv" data-id="' + esc(p.id) + '"' + (p.high_volume ? ' checked' : '') + '><span>' + (p.high_volume ? '50%' : '30%') + '</span></label><small>' + lastMonth + ' funded last month</small>') + '</td>'
+        + '<td style="white-space:nowrap">' + (off ? '<button class="btn sm" data-a="restore-partner" data-id="' + esc(p.id) + '">Restore access</button>' : '<button class="btn sm" data-a="resend-partner" data-id="' + esc(p.id) + '">Resend package</button> <button class="btn sm" data-a="remove-partner" data-id="' + esc(p.id) + '" style="color:var(--bad)">Remove access</button>') + '</td></tr>';
+    }
+    var active = S.partners.filter(function (p) { return !p.removed_at; }), gone = S.partners.filter(function (p) { return p.removed_at; });
+    var head = '<table><thead><tr><th>Partner</th><th>Code</th><th>Contact</th><th class="num">Clients</th><th class="num">Funded</th><th class="num">Commission</th><th>High volume</th><th>Back office</th></tr></thead><tbody>';
+    return '<div class="head"><div><h1>Partners</h1><p class="sub">' + active.length + ' active' + (gone.length ? ', ' + gone.length + ' removed' : '') + '. 50% applies when a partner funds 10 or more deals in a month; the count shows under the box.</p></div><button class="btn primary" data-a="add-partner">Add partner</button></div><div class="tablewrap">' + (active.length ? head + active.map(row).join('') + '</tbody></table>' : '<p class="empty" style="padding:16px">No partners yet.</p>') + '</div>'
+      + (gone.length ? '<h2 style="margin-top:24px">Removed partners</h2><p class="sub">They can\'t log in and their links no longer credit them. Their history stays.</p><div class="tablewrap">' + head + gone.map(row).join('') + '</tbody></table></div>' : '');
   }
   function payoutsPage() {
     var rows = owedItems().map(function (d) {
@@ -342,6 +350,18 @@
     else if (a === 'add-client') openClient();
     else if (a === 'add-partner') openPartner();
     else if (a === 'hv') sb.from('partners').update({ high_volume: t.checked }).eq('id', t.getAttribute('data-id')).then(function (r) { if (r.error) toast('That did not save.'); else { toast(t.checked ? 'Now at 50% on fees collected from here on' : 'Now at 30% on fees collected from here on'); refresh(); } });
+    else if (a === 'resend-client' || a === 'resend-partner') {
+      var who = a === 'resend-client' ? 'client' : 'partner', rid = who === 'client' ? d.id : t.getAttribute('data-id');
+      if (!window.confirm(who === 'client' ? 'Email the Client Packet to ' + d.email + ' again?' : 'Email the Partner Package to this partner again?')) return;
+      t.disabled = true;
+      sb.auth.getSession().then(function (s) { return clientApi({ action: 'resend', target: who, id: rid }, s.data.session.access_token); }).then(function () { toast(who === 'client' ? 'Client Packet sent again' : 'Partner Package sent again'); }, function (x) { toast(x.message); }).then(function () { t.disabled = false; });
+    }
+    else if (a === 'remove-partner' || a === 'restore-partner') {
+      var rm = a === 'remove-partner';
+      if (!window.confirm(rm ? 'Remove this partner\'s access? They will not be able to log in, and new leads from their links will not be credited to them. Their history stays.' : 'Restore this partner\'s access?')) return;
+      t.disabled = true;
+      sb.auth.getSession().then(function (s) { return clientApi({ action: 'partner_access', id: t.getAttribute('data-id'), remove: rm }, s.data.session.access_token); }).then(function () { toast(rm ? 'Access removed' : 'Access restored'); return refresh(); }, function (x) { toast(x.message); t.disabled = false; });
+    }
     else if (a === 'app-received') saveDeal(d, { application_received_at: new Date().toISOString() }, 'Application marked received');
     else if (a === 'app-unreceived') saveDeal(d, { application_received_at: null }, 'Application mark removed');
     else if (a === 'add-app') openApp(d);

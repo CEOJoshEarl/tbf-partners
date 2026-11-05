@@ -147,7 +147,7 @@
 <script>
 (function () {
   var q = new URLSearchParams(location.search), page = q.get('page') || 'biz', ref = q.get('ref') || '', lang = q.get('lang') === 'es' ? 'es' : 'en', preview = q.get('preview') === '1';
-  var cfg = defaultSite(), prof = null, phone = TBF_PHONE, email = TBF_EMAIL;
+  var cfg = defaultSite(), prof = null, phone = TBF_PHONE, email = TBF_EMAIL, WL = false, BRAND = 'The Business Funders';
 
   var EN = {
     bizTag: 'Get started today and speak with an advisor', partnerTag: 'Partner with The Business Funders', call: 'Call now',
@@ -319,11 +319,12 @@
   function cards(list, cls, numbered, letters) { return '<div class="cards ' + cls + '">' + list.map(function (c, i) { return '<div class="card ' + (numbered ? 'step' : '') + '"><span class="ic">' + (numbered ? i + 1 : (letters ? c[0].charAt(0) : i + 1)) + '</span><h3>' + esc(c[0]) + '</h3><p>' + esc(c[1]) + '</p></div>'; }).join('') + '</div>'; }
 
   function shell(tag, body) {
-    var logos = '<div class="logos">' + (cfg.logo ? '<img src="' + esc(cfg.logo) + '" alt="' + esc(prof && prof.company || 'Partner') + '"><span>in partnership with</span>' : '') + '<img src="' + LOGO + '" alt="The Business Funders"></div>';
+    var logos = WL ? '<div class="logos">' + (cfg.logo ? '<img src="' + esc(cfg.logo) + '" alt="' + esc(BRAND) + '">' : '<b style="font-size:24px;color:var(--ink);font-weight:800">' + esc(BRAND) + '</b>') + '</div>'
+      : '<div class="logos">' + (cfg.logo ? '<img src="' + esc(cfg.logo) + '" alt="' + esc(prof && prof.company || 'Partner') + '"><span>in partnership with</span>' : '') + '<img src="' + LOGO + '" alt="The Business Funders"></div>';
     return (preview ? '<div class="preview"><div class="in">' + esc(T.backPortal) + ' <a href="index.html#website">' + esc(T.back) + '</a></div></div>' : '')
       + '<div class="top"><div class="in"><span>' + esc(T.call) + ' <a href="tel:' + esc(phone.replace(/[^0-9+]/g, '')) + '"><b>' + esc(phone) + '</b></a></span><a href="' + link(page, lang === 'es' ? 'en' : 'es') + '" style="font-weight:600;text-decoration:underline">' + (lang === 'es' ? T.en : T.es) + '</a></div></div>'
       + '<header><div class="in">' + logos + '<span class="tag">' + esc(tag) + '</span></div></header>' + body
-      + '<footer><div class="in"><span>' + esc(phone) + ' · ' + esc(email) + ' · ' + TBF_HOURS + '</span><span><a href="' + SITE + '/terms-of-use" target="_blank" rel="noopener">' + esc(T.terms) + '</a> · <a href="' + SITE + '/privacy-policy" target="_blank" rel="noopener">' + esc(T.privacy) + '</a></span><span>© ' + new Date().getFullYear() + ' The Business Funders. ' + esc(T.rights) + '</span></div></footer>';
+      + '<footer><div class="in"><span>' + esc(phone) + ' · ' + esc(email) + ' · ' + TBF_HOURS + '</span><span><a href="' + SITE + '/terms-of-use" target="_blank" rel="noopener">' + esc(T.terms) + '</a> · <a href="' + SITE + '/privacy-policy" target="_blank" rel="noopener">' + esc(T.privacy) + '</a></span><span>© ' + new Date().getFullYear() + ' ' + esc(BRAND) + '. ' + esc(T.rights) + '</span></div></footer>';
   }
   function iconCards(list, icons, cls) { return '<div class="cards ' + cls + '">' + list.map(function (c, i) { return '<div class="card"><span class="ic">' + svg(icons[i]) + '</span><h3>' + esc(c[0]) + '</h3><p>' + esc(c[1]) + '</p></div>'; }).join('') + '</div>'; }
   function progDialog(p) {
@@ -368,8 +369,12 @@
   }
   function start() {
   phone = cfg.customPhone || cfg.phone || TBF_PHONE; email = cfg.email || TBF_EMAIL;
+  /* White label: the partner's name replaces ours everywhere on the page. Terms and privacy links stay, since applications are handled under them. */
+  WL = cfg.brand === 'whitelabel' && !!(prof && prof.company || cfg.logo); BRAND = WL ? (prof && prof.company || 'Our funding team') : 'The Business Funders';
+  if (WL) { var swap = function (v) { return typeof v === 'string' ? v.replace(/The Business Funders/g, BRAND) : Array.isArray(v) ? v.map(swap) : v; }; Object.keys(T).forEach(function (k) { T[k] = swap(T[k]); }); }
   document.getElementById('app').innerHTML = page === 'partner' ? partnerPage() : page === 'apply' ? applyPage() : bizPage();
-  document.title = (page === 'partner' ? T.partnerH1 : page === 'apply' ? T.appT : T.bizH1) + ' | The Business Funders';
+  document.title = (page === 'partner' ? T.partnerH1 : page === 'apply' ? T.appT : T.bizH1) + ' | ' + BRAND;
+  if (WL && !cfg.favicon) document.querySelectorAll('link[rel=icon],link[rel=apple-touch-icon]').forEach(function (l) { l.remove(); });
   if (cfg.favicon) { var ic = document.createElement('link'); ic.rel = 'icon'; ic.href = cfg.favicon; document.head.appendChild(ic); }
 
   /* Ad and analytics tags the partner saved in their website settings. IDs are checked so nothing else can be injected. */
@@ -440,7 +445,7 @@
   if (ref) {
     fetch(SB_URL + '/rest/v1/rpc/public_site', { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY }, body: JSON.stringify({ p_code: ref }) })
       .then(function (r) { return r.ok ? r.json() : null; })
-      .then(function (j) { if (j) { prof = { company: j.company }; ['logo', 'favicon', 'phone', 'customPhone', 'email'].forEach(function (k) { if (j[k]) cfg[k] = j[k]; }); if (j.tracking) cfg.tracking = j.tracking; } }, function () {})
+      .then(function (j) { if (j) { prof = { company: j.company }; ['brand', 'logo', 'favicon', 'phone', 'customPhone', 'email'].forEach(function (k) { if (j[k]) cfg[k] = j[k]; }); if (j.tracking) cfg.tracking = j.tracking; } }, function () {})
       .then(start);
   } else start();
 })();

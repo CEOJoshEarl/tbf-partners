@@ -82,8 +82,61 @@
   .sect + .sect { margin-top: 12px; }
   .sect h3 { border-bottom: 1px solid var(--line); padding-bottom: 8px; }
   .note { font-size: 14px; color: var(--muted); }
-  @media (max-width: 960px) { .hero-grid { grid-template-columns: minmax(0, 1fr); gap: 28px; } .c4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } h1 { font-size: 38px; } }
-  @media (max-width: 620px) { .c4, .c3, .fields { grid-template-columns: minmax(0, 1fr); } h1 { font-size: 34px; } h2 { font-size: 28px; } section.band { padding-block: 44px; } .form { padding: 20px; } .logos img { height: 54px; } .tag { display: none; } .in { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); } }
+  /* Business page: clickable programs, photo split, qualify row, portal preview */
+  .plist { list-style: none; display: flex; flex-direction: column; gap: 6px; border-left: 4px solid #7FA6F5; padding-left: 12px; }
+  .plist button { all: unset; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; max-width: 420px; padding: 9px 12px; border-radius: 10px; color: var(--white); font-weight: 600; cursor: pointer; background: rgba(255,255,255,.08); transition: background .15s ease; }
+  .plist button:hover { background: rgba(255,255,255,.18); }
+  .plist button:focus-visible { outline: 3px solid rgba(255,255,255,.7); }
+  .plist button svg { width: 18px; height: 18px; flex: none; opacity: .85; }
+  .plist .all { color: #DCE6FB; text-decoration: underline; font-weight: 600; padding: 6px 12px; display: inline-block; }
+  .hint { font-size: 14px; color: #BFD0F5; }
+  .split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 40px; align-items: center; }
+  .photo { position: relative; border-radius: 28px 28px 120px 28px; overflow: hidden; aspect-ratio: 4 / 3.4; background: var(--brand-soft); }
+  .photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .photo .btn { position: absolute; left: 50%; bottom: 22px; transform: translateX(-50%); min-height: 52px; font-size: 16px; white-space: nowrap; box-shadow: 0 10px 30px rgba(11,18,32,.3); }
+  .c2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .card .ic svg, .qual .ic svg { width: 24px; height: 24px; }
+  .prog { text-align: left; cursor: pointer; font: inherit; color: inherit; transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease; }
+  .prog:hover { border-color: var(--brand); box-shadow: 0 10px 28px rgba(37,99,235,.12); transform: translateY(-2px); }
+  .prog .amt { font-size: 14px; font-weight: 700; color: var(--brand-dark); background: var(--brand-soft); border-radius: 999px; padding: 3px 10px; align-self: flex-start; }
+  .prog .more { margin-top: auto; padding-top: 6px; font-size: 15px; font-weight: 700; color: var(--brand); }
+  .qual { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; border-top: 2px solid var(--brand); padding-top: 28px; }
+  .qual > div { display: flex; gap: 14px; align-items: flex-start; }
+  .qual .ic { width: 56px; height: 56px; flex: none; border-radius: 50%; border: 2px solid var(--brand); color: var(--brand); display: grid; place-items: center; }
+  .qual h3 { color: var(--brand-dark); }
+  .qual p { font-size: 16px; }
+  .stepl { display: flex; flex-direction: column; gap: 22px; }
+  .stepl > div { display: flex; gap: 16px; align-items: flex-start; }
+  .stepl .ic { width: 64px; height: 64px; flex: none; border-radius: 50%; background: var(--soft); color: var(--brand); display: grid; place-items: center; font-size: 24px; font-weight: 800; }
+  .stepl h3 { color: var(--brand-dark); font-size: 22px; }
+  .mock { background: linear-gradient(135deg, #0B1F52, #1D4ED8); border-radius: 28px 120px 28px 28px; padding: 36px; }
+  .mock .win { background: var(--white); border-radius: 16px; padding: 22px; box-shadow: 0 18px 50px rgba(11,18,32,.35); display: flex; flex-direction: column; gap: 14px; }
+  .mock .win b { color: var(--ink); font-size: 18px; }
+  .mock ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+  .mock li { display: flex; align-items: center; gap: 10px; font-weight: 600; color: var(--muted); font-size: 15.5px; }
+  .mock li i { width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--line); display: grid; place-items: center; font-style: normal; font-size: 13px; flex: none; }
+  .mock li.ok { color: var(--ink); } .mock li.ok i { background: var(--good); border-color: var(--good); color: var(--white); }
+  .mock li.now { color: var(--brand-dark); } .mock li.now i { border-color: var(--brand); color: var(--brand); }
+  .mock .offer { border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 15px; }
+  .mock .offer span:last-child { background: var(--brand); color: var(--white); border-radius: 8px; padding: 6px 12px; font-weight: 700; font-size: 14px; }
+  dialog.pd { border: 0; border-radius: 18px; padding: 0; width: min(720px, calc(100vw - 32px)); max-height: calc(100vh - 48px); box-shadow: 0 30px 80px rgba(11,18,32,.4); color: var(--body); }
+  dialog.pd::backdrop { background: rgba(11,18,32,.55); }
+  .pd .hd { background: linear-gradient(135deg, #0B1F52, #1D4ED8); color: var(--white); padding: 22px 24px; display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; position: sticky; top: 0; }
+  .pd .hd h2 { color: var(--white); font-size: 26px; }
+  .pd .hd p { color: #DCE6FB; font-size: 16px; margin-top: 6px; }
+  .pd .x { all: unset; cursor: pointer; width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; background: rgba(255,255,255,.14); flex: none; }
+  .pd .x:focus-visible { outline: 3px solid rgba(255,255,255,.7); }
+  .pd .bd { padding: 22px 24px 26px; display: flex; flex-direction: column; gap: 18px; }
+  .facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .facts div { background: var(--soft); border-radius: 12px; padding: 12px 14px; }
+  .facts span { display: block; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+  .facts b { color: var(--ink); font-weight: 700; }
+  .pd h3 { font-size: 18px; margin-bottom: 6px; }
+  .pd ul { padding-left: 20px; display: flex; flex-direction: column; gap: 4px; }
+  .pd .btn { align-self: flex-start; }
+  @media (max-width: 960px) { .hero-grid, .split { grid-template-columns: minmax(0, 1fr); gap: 28px; } .c4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } .qual { grid-template-columns: minmax(0, 1fr); } h1 { font-size: 38px; } }
+  @media (max-width: 620px) { .c4, .c3, .c2, .fields, .facts { grid-template-columns: minmax(0, 1fr); } h1 { font-size: 34px; } h2 { font-size: 28px; } section.band { padding-block: 44px; } .form { padding: 20px; } .logos img { height: 54px; } .tag { display: none; } .in { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); } .photo .btn { font-size: 15px; padding: 0 18px; } .mock { padding: 22px; } }
+  @media (prefers-reduced-motion: reduce) { .prog, .plist button { transition: none; } .prog:hover { transform: none; } }
   @media print { .preview, .top, .btn, .lang, .cta, .tag { display: none !important; } .hero { background: none; padding: 0; } .form { box-shadow: none; padding: 0; } h1 { color: var(--ink); } .f input, .f select, .f textarea { height: 36px; } }
 </style>
 </head>
@@ -105,10 +158,14 @@
     apply: 'Apply now', sending: 'Sending...', err: 'Required', errSend: 'That did not send. Please try again or call us.',
     doneT: 'Thank you!', doneS: 'We have your information. An advisor will reach out soon.',
     whatH: 'What is a small business loan?', whatP: 'A small business loan is any funding made for a business, whether it is new or established. Different loans fit different goals, and how each one works depends on the type.',
-    whyCards: [['Simple application', 'One short form. An advisor takes it from there.'], ['Over 40 funding programs', 'More programs means more ways to find a fit for your business.'], ['Fast funding', 'Same-day funding is available on some products.'], ['Real people', 'Talk to an advisor who explains your options in plain words.']],
-    readyH: 'What do you need to qualify?', readyP: 'Requirements vary by product. Your advisor will go over what fits.', ready: [['4+ months in business', 'Some options are open to businesses with as little as 4 months in business.'], ['$10,000+ monthly sales', 'Most options look for at least $10,000 a month, or $120,000 a year, in sales.'], ['No minimum credit score', 'Some options have no minimum score. Others do, depending on the product.']],
-    stepsH: 'Getting started is easy', steps: [['Apply online', 'Fill out the short form on this page.'], ['Review options', 'Your advisor goes over the options with you.'], ['Get funded', 'Pick what works for you and finish the paperwork.']],
+    whyCards: [['Simple application', 'One short form. An advisor takes it from there.'], ['A network of lenders', 'We match you with lenders we partner with, using relationships we already have.'], ['Options for many credit profiles', 'Programs start at a 500 credit score, and some have no credit minimum.'], ['You choose', 'Compare your offers and accept only the ones that work for you.']],
+    readyH: 'What do you need to qualify?', readyP: 'Requirements vary by program. Tap any program to see exactly what it needs.', ready: [['6+ months in business', 'Revenue lending starts at 6 months. Lines of credit and term loans look for 1 year or more.'], ['$10,000+ monthly sales', 'Revenue lending starts at $10,000 a month. Lines of credit and term loans look for $25,000 or more.'], ['Credit scores from 500+', 'Some programs, like accounts receivable and purchase order financing, have no credit minimum.']],
+    stepsH: 'Getting started is easy', steps: [['Apply online', 'Fill out the short form on this page. It takes about a minute.'], ['Review your options', 'Your advisor goes over every offer with you in plain words.'], ['Accept and get funded', 'Accept the offers you want and finish the paperwork.']],
     ctaH: 'Ready to see your options?', ctaB: 'Apply now', full: 'Prefer the full application?',
+    progH: 'Our funding programs', progP: 'Tap a program to see amounts, terms, requirements and what to send.', seeAll: 'See all 13 programs', tapHint: 'Tap any program to see what it needs.', seeReq: 'See requirements',
+    bestH: 'Why The Business Funders', bestCards: [['Lenders compete for you', 'One application reaches the lenders in our network that fit your business.'], ['Plain answers', 'Your advisor explains each offer, its cost and its terms before you decide.'], ['Your own client portal', 'Track your progress, see your offers and accept or decline them online.'], ['Paid when you are', 'Our success fee applies only to funding you accept.']],
+    portalT: 'Your progress', portalSteps: ['Getting started', 'Preparing your file', 'Applying to lenders', 'Your offers', 'Funded'], offerT: 'Line of credit · $75,000', review: 'Review',
+    fCollat: 'Collateral', fAmt: 'Amounts', fTerm: 'Term', fRate: 'Rates', hReq: 'Requirements', hDet: 'Details', hDocs: 'What to send', applyFor: 'Apply for this program', close: 'Close', reqNote: 'Requirements can change. Your advisor confirms what fits before anything is submitted.',
     partnerH1: 'Become a partner today', partnerSub: 'Online application', perks: ['Put your relationships to work', 'Over 40 funding programs for your clients', 'Real-time partner portal', 'Earn commission on funded deals'],
     pFormT: 'Join the partner program', pFormS: 'Create your login and go straight to your partner portal.', join: 'Create my account',
     pDoneS: 'We have your application. Our partnership team will reach out soon.',
@@ -126,10 +183,14 @@
     apply: 'Solicitar ahora', sending: 'Enviando...', err: 'Obligatorio', errSend: 'No se pudo enviar. Inténtelo de nuevo o llámenos.',
     doneT: '¡Gracias!', doneS: 'Recibimos su información. Un asesor se comunicará pronto.',
     whatH: '¿Qué es un préstamo para pequeñas empresas?', whatP: 'Un préstamo para pequeñas empresas es cualquier financiamiento creado para un negocio, nuevo o establecido. Cada tipo de préstamo sirve para metas distintas y funciona de manera diferente.',
-    whyCards: [['Solicitud sencilla', 'Un formulario corto. Un asesor se encarga del resto.'], ['Más de 40 programas de financiamiento', 'Más programas significan más formas de encontrar lo que le conviene.'], ['Fondos rápidos', 'Hay fondos el mismo día en algunos productos.'], ['Personas reales', 'Hable con un asesor que explica sus opciones con palabras claras.']],
-    readyH: '¿Qué necesita para calificar?', readyP: 'Los requisitos varían según el producto. Su asesor le explicará qué le conviene.', ready: [['4+ meses en el negocio', 'Algunas opciones aceptan negocios con tan solo 4 meses de operación.'], ['$10,000+ en ventas mensuales', 'La mayoría de las opciones buscan al menos $10,000 al mes, o $120,000 al año, en ventas.'], ['Sin puntaje mínimo', 'Algunas opciones no tienen puntaje mínimo. Otras sí, según el producto.']],
-    stepsH: 'Comenzar es fácil', steps: [['Solicite en línea', 'Complete el formulario corto en esta página.'], ['Revise sus opciones', 'Su asesor repasa las opciones con usted.'], ['Reciba los fondos', 'Elija lo que le conviene y termine el papeleo.']],
+    whyCards: [['Solicitud sencilla', 'Un formulario corto. Un asesor se encarga del resto.'], ['Una red de prestamistas', 'Lo conectamos con prestamistas aliados, usando relaciones que ya tenemos.'], ['Opciones para muchos perfiles de crédito', 'Los programas empiezan con un puntaje de 500, y algunos no tienen mínimo.'], ['Usted decide', 'Compare sus ofertas y acepte solo las que le convienen.']],
+    readyH: '¿Qué necesita para calificar?', readyP: 'Los requisitos varían según el programa. Toque cualquier programa para ver lo que necesita.', ready: [['6+ meses en el negocio', 'El financiamiento por ingresos empieza a los 6 meses. Las líneas de crédito y préstamos a plazo piden 1 año o más.'], ['$10,000+ en ventas mensuales', 'El financiamiento por ingresos empieza con $10,000 al mes. Las líneas de crédito y préstamos a plazo piden $25,000 o más.'], ['Puntajes desde 500+', 'Algunos programas, como cuentas por cobrar y órdenes de compra, no tienen puntaje mínimo.']],
+    stepsH: 'Comenzar es fácil', steps: [['Solicite en línea', 'Complete el formulario corto en esta página. Toma alrededor de un minuto.'], ['Revise sus opciones', 'Su asesor repasa cada oferta con usted con palabras claras.'], ['Acepte y reciba los fondos', 'Acepte las ofertas que quiera y termine el papeleo.']],
     ctaH: '¿Listo para ver sus opciones?', ctaB: 'Solicitar ahora', full: '¿Prefiere la solicitud completa?',
+    progH: 'Nuestros programas de financiamiento', progP: 'Toque un programa para ver montos, plazos, requisitos y qué enviar.', seeAll: 'Ver los 13 programas', tapHint: 'Toque cualquier programa para ver lo que necesita.', seeReq: 'Ver requisitos',
+    bestH: 'Por qué The Business Funders', bestCards: [['Los prestamistas compiten por usted', 'Una sola solicitud llega a los prestamistas de nuestra red que encajan con su negocio.'], ['Respuestas claras', 'Su asesor le explica cada oferta, su costo y sus condiciones antes de que decida.'], ['Su propio portal de cliente', 'Siga su progreso, vea sus ofertas y acéptelas o rechácelas en línea.'], ['Cobramos cuando usted recibe', 'Nuestra tarifa de éxito aplica solo al financiamiento que usted acepte.']],
+    portalT: 'Su progreso', portalSteps: ['Comenzando', 'Preparando su expediente', 'Solicitando a prestamistas', 'Sus ofertas', 'Fondos recibidos'], offerT: 'Línea de crédito · $75,000', review: 'Revisar',
+    fCollat: 'Garantía', fAmt: 'Montos', fTerm: 'Plazo', fRate: 'Tasas', hReq: 'Requisitos', hDet: 'Detalles', hDocs: 'Qué enviar', applyFor: 'Solicitar este programa', close: 'Cerrar', reqNote: 'Los requisitos pueden cambiar. Su asesor confirma lo que le conviene antes de enviar algo.',
     partnerH1: 'Conviértase en socio hoy', partnerSub: 'Solicitud en línea', perks: ['Aproveche sus relaciones', 'Más de 40 programas de financiamiento para sus clientes', 'Portal de socios en tiempo real', 'Gane comisión por cada negocio financiado'],
     pFormT: 'Únase al programa de socios', pFormS: 'Cree su acceso y entre directamente a su portal de socios.', join: 'Crear mi cuenta',
     pDoneS: 'Recibimos su solicitud. Nuestro equipo de socios se comunicará pronto.',
@@ -138,8 +199,115 @@
     appT: 'Solicitud de financiamiento', appS: 'Complétela en línea o imprímala y envíela a su asesor.', print: 'Imprimir solicitud en blanco', secBiz: 'Negocio', secOwner: 'Propietario', secFund: 'Solicitud de fondos', legal: 'Nombre legal del negocio', dba: 'Nombre comercial (si aplica)', address: 'Dirección del negocio', city: 'Ciudad', zip: 'Código postal', entity: 'Tipo de negocio', start: 'Fecha de inicio', ownerName: 'Nombre completo del propietario', ownerPct: '% de propiedad', amount: 'Monto solicitado', use: '¿Para qué es el dinero?', monthly: 'Ventas mensuales promedio', secure: 'No ingrese su número de Seguro Social ni acceso bancario aquí. Su asesor los recopilará de forma segura.', submitApp: 'Enviar solicitud',
     password: 'Cree una contraseña (10+ caracteres)', haveAcct: '¿Ya es socio?', logIn: 'Iniciar sesión', tooShort: 'Use al menos 10 caracteres.', feeNote: 'Se aplica una tarifa de éxito una vez que reciba los fondos. El monto depende del tipo de financiamiento, y su asesor lo revisará con usted antes de firmar.', rights: 'Todos los derechos reservados.', backPortal: 'Vista previa de su sitio de socio.', back: 'Volver al portal', es: 'Español', en: 'English'
   };
+  /* Funding programs, from thebusinessfunders.com/fundingrequirements (Josh, 2026-11-05). form = the Product value sent to GHL. */
+  var PROGRAMS = [
+    { key: 'stacking', form: 'Credit Card Stacking', hero: 1,
+      en: { name: 'Business Credit Card Stacking', sum: 'Several business credit cards approved in a planned order, so you get a larger combined limit to use in your business.', collat: 'Strong personal credit', amt: '$10,000 – $150,000', term: 'Revolving credit cards', rate: 'Varies by card',
+        reqs: ['Personal credit score of 700+ on all 3 bureaus', 'Under 40% used on each revolving account', 'No more than 4 bank inquiries per bureau in the last 12 months (secured inquiries like auto loans and mortgages don’t count)', 'No bankruptcies', 'No open or unpaid collections or judgments', 'No late payments in the last 2 years and no charged-off accounts', 'At least 2 open revolving accounts with $5,000+ limits and 2+ years of history, seasoned major bank cards (authorized user accounts don’t count)'],
+        det: ['Approval amounts are usually close to your current credit card limits.'], docs: [] },
+      es: { name: 'Combinación de tarjetas de crédito comerciales', sum: 'Varias tarjetas de crédito comerciales aprobadas en un orden planeado, para que tenga un límite combinado mayor para su negocio.', collat: 'Buen crédito personal', amt: '$10,000 – $150,000', term: 'Tarjetas de crédito rotativas', rate: 'Varía según la tarjeta',
+        reqs: ['Puntaje de crédito personal de 700+ en los 3 burós', 'Menos del 40% usado en cada cuenta rotativa', 'No más de 4 consultas bancarias por buró en los últimos 12 meses (las consultas con garantía, como préstamos de auto e hipotecas, no cuentan)', 'Sin bancarrotas', 'Sin cobranzas o juicios abiertos o sin pagar', 'Sin pagos atrasados en los últimos 2 años y sin cuentas canceladas por falta de pago', 'Al menos 2 cuentas rotativas abiertas con límites de $5,000+ y 2+ años de historial, tarjetas de bancos principales (las cuentas de usuario autorizado no cuentan)'],
+        det: ['Los montos aprobados suelen ser parecidos a los límites de sus tarjetas actuales.'], docs: [] } },
+    { key: 'revenue', form: 'Working Capital', hero: 1,
+      en: { name: 'Business Revenue Lending', sum: 'Working capital based on the steady revenue in your business bank account.', collat: 'Steady revenue shown in business bank statements', amt: '$10,000 – $10 million', term: '6 – 36 months', rate: 'Factor rate of 1.15 – 1.45',
+        reqs: ['Personal credit score of 500+', 'No recent bankruptcies', '$10,000+ in monthly gross revenue, shown in the last 6 months of business bank statements', '6+ months in business', 'More than 5 deposits each month'],
+        det: ['Some financial services industries are not eligible.'], docs: ['Application', 'Last 6 months of business bank statements'] },
+      es: { name: 'Financiamiento por ingresos', sum: 'Capital de trabajo basado en los ingresos constantes de su cuenta bancaria comercial.', collat: 'Ingresos constantes en sus estados de cuenta comerciales', amt: '$10,000 – $10 millones', term: '6 – 36 meses', rate: 'Factor de 1.15 – 1.45',
+        reqs: ['Puntaje de crédito personal de 500+', 'Sin bancarrotas recientes', '$10,000+ en ingresos brutos mensuales, reflejados en los últimos 6 meses de estados de cuenta comerciales', '6+ meses en el negocio', 'Más de 5 depósitos cada mes'],
+        det: ['Algunas industrias de servicios financieros no califican.'], docs: ['Solicitud', 'Últimos 6 meses de estados de cuenta comerciales'] } },
+    { key: 'loc', form: 'Line of Credit', hero: 1,
+      en: { name: 'Line of Credit', sum: 'A revolving credit line you draw from when you need it. You only pay on what you use.', collat: 'Steady revenue shown in business bank statements', amt: 'Up to $750,000', term: 'Revolving credit', rate: 'Simple interest',
+        reqs: ['Personal credit score of 600+', '1+ year in business', '$25,000+ deposited monthly in your business bank account'], det: ['You only pay on the amount you draw.'], docs: ['Application', 'Last 6 months of business bank statements'] },
+      es: { name: 'Línea de crédito', sum: 'Una línea de crédito rotativa que usa cuando la necesita. Solo paga por lo que usa.', collat: 'Ingresos constantes en sus estados de cuenta comerciales', amt: 'Hasta $750,000', term: 'Crédito rotativo', rate: 'Interés simple',
+        reqs: ['Puntaje de crédito personal de 600+', '1+ año en el negocio', '$25,000+ depositados al mes en su cuenta bancaria comercial'], det: ['Solo paga por el monto que retire.'], docs: ['Solicitud', 'Últimos 6 meses de estados de cuenta comerciales'] } },
+    { key: 'term', form: 'Term Loan', hero: 1,
+      en: { name: 'Term Loan', sum: 'A lump sum you repay in set payments over 1 to 5 years.', collat: 'Steady revenue shown in business bank statements', amt: 'Up to $10 million', term: '1 – 5 years, monthly payments available', rate: 'Variable',
+        reqs: ['Personal credit score of 650+', '1+ year in business', '$25,000+ deposited monthly in your business bank account'], det: [], docs: ['Application', 'Last 6 months of business bank statements'] },
+      es: { name: 'Préstamo a plazo', sum: 'Una suma total que paga en cuotas fijas de 1 a 5 años.', collat: 'Ingresos constantes en sus estados de cuenta comerciales', amt: 'Hasta $10 millones', term: '1 – 5 años, con pagos mensuales disponibles', rate: 'Variable',
+        reqs: ['Puntaje de crédito personal de 650+', '1+ año en el negocio', '$25,000+ depositados al mes en su cuenta bancaria comercial'], det: [], docs: ['Solicitud', 'Últimos 6 meses de estados de cuenta comerciales'] } },
+    { key: 'sba', form: 'SBA', hero: 1,
+      en: { name: 'SBA Loans', sum: 'Loans backed by the U.S. Small Business Administration, with long terms. Also used to buy a business or start one with a strong plan.', collat: 'Business and personal financials', amt: 'Up to $5 million', term: '10 – 25 years', rate: 'Prime + 1% to 2.75%',
+        reqs: ['Personal credit score of 650+', '2+ years in business', 'Profit shown on business tax returns for 2 years (no losses)', 'No felonies or criminal history', 'No defaults on federal loans (VA, FHA or student loans)'],
+        det: ['Funding takes 4 to 8 weeks.', 'Can be used for working capital or a real estate purchase.', 'Buying a business: 650+ credit, management or ownership history in the same or a similar industry, 3 years of financials from the current owner, 3 years of personal tax returns, a business debt schedule, and 15–20% down.', 'New business (based on projections): 650+ credit, experience in the field, a personal financial statement, 3 years of personal tax returns, a business debt schedule, and 15–20% down.'],
+        docs: ['Application', 'Business tax returns, if they apply', 'Personal tax returns, if they apply', 'Personal financial statement, if it applies', 'Business bank statements, if they apply', 'Business plan', 'Financials from the business owner'] },
+      es: { name: 'Préstamos SBA', sum: 'Préstamos respaldados por la Administración de Pequeñas Empresas de EE. UU., con plazos largos. También sirven para comprar un negocio o iniciar uno con un buen plan.', collat: 'Finanzas del negocio y personales', amt: 'Hasta $5 millones', term: '10 – 25 años', rate: 'Prime + 1% a 2.75%',
+        reqs: ['Puntaje de crédito personal de 650+', '2+ años en el negocio', 'Ganancias en las declaraciones de impuestos del negocio por 2 años (sin pérdidas)', 'Sin delitos graves ni antecedentes penales', 'Sin incumplimientos en préstamos federales (VA, FHA o préstamos estudiantiles)'],
+        det: ['El financiamiento toma de 4 a 8 semanas.', 'Puede usarse para capital de trabajo o para comprar bienes raíces.', 'Comprar un negocio: crédito de 650+, experiencia en la gerencia o como dueño en la misma industria o una parecida, 3 años de finanzas del dueño actual, 3 años de declaraciones de impuestos personales, lista de deudas del negocio y 15–20% de pago inicial.', 'Negocio nuevo (según proyecciones): crédito de 650+, experiencia en el campo, estado financiero personal, 3 años de declaraciones de impuestos personales, lista de deudas del negocio y 15–20% de pago inicial.'],
+        docs: ['Solicitud', 'Declaraciones de impuestos del negocio, si aplican', 'Declaraciones de impuestos personales, si aplican', 'Estado financiero personal, si aplica', 'Estados de cuenta comerciales, si aplican', 'Plan de negocios', 'Finanzas del dueño del negocio'] } },
+    { key: 'ar', form: 'AR / Factoring', hero: 1,
+      en: { name: 'Accounts Receivable Financing', sum: 'Get cash now for invoices your customers haven’t paid yet.', collat: 'Accounts receivable', amt: 'Up to $20 million', term: 'Variable', rate: 'Under 2%',
+        reqs: ['Poor credit accepted', 'Invoices must be to other businesses or government agencies, not consumers', 'No revenue minimum'],
+        det: ['Advance of up to 80% of your receivables.', 'No application fees.', 'Get cash before the 30, 60 or 90 days your customers take to pay.', 'Invoices and the invoicing company are verified.'], docs: ['Accounts receivable aging report'] },
+      es: { name: 'Financiamiento de cuentas por cobrar', sum: 'Reciba efectivo hoy por facturas que sus clientes aún no han pagado.', collat: 'Cuentas por cobrar', amt: 'Hasta $20 millones', term: 'Variable', rate: 'Menos del 2%',
+        reqs: ['Se acepta crédito bajo', 'Las facturas deben ser a otros negocios o agencias del gobierno, no a consumidores', 'Sin ingresos mínimos'],
+        det: ['Adelanto de hasta el 80% de sus cuentas por cobrar.', 'Sin cargos de solicitud.', 'Reciba efectivo antes de los 30, 60 o 90 días que tardan sus clientes en pagar.', 'Se verifican las facturas y la empresa que factura.'], docs: ['Informe de antigüedad de cuentas por cobrar'] } },
+    { key: 'po', form: 'Purchase Order Financing',
+      en: { name: 'Purchase Order Financing', sum: 'We pay your supplier so you can fill large customer orders.', collat: 'Purchase orders', amt: 'Up to $20 million', term: 'Variable', rate: '2% – 5%',
+        reqs: ['No credit minimum', '$200,000+ in existing purchase orders', 'A customer with good credit'],
+        det: ['Deals range from $200,000 to $20 million, based on your orders and your ability to deliver.', 'Covers up to 95% of existing purchase orders.', 'Funds are paid directly to your supplier.'], docs: ['Open purchase orders that need to be filled'] },
+      es: { name: 'Financiamiento de órdenes de compra', sum: 'Le pagamos a su proveedor para que pueda cumplir pedidos grandes de sus clientes.', collat: 'Órdenes de compra', amt: 'Hasta $20 millones', term: 'Variable', rate: '2% – 5%',
+        reqs: ['Sin puntaje mínimo', '$200,000+ en órdenes de compra existentes', 'Un cliente con buen crédito'],
+        det: ['Los montos van de $200,000 a $20 millones, según sus órdenes y su capacidad de entregar.', 'Cubre hasta el 95% de las órdenes de compra existentes.', 'Los fondos se pagan directamente a su proveedor.'], docs: ['Órdenes de compra abiertas por cumplir'] } },
+    { key: 'inventory', form: 'Inventory Financing',
+      en: { name: 'Inventory Financing', sum: 'Funding to buy inventory, backed by the inventory itself.', collat: 'Inventory', amt: '$50,000 – $15 million', term: 'Up to 1 year', rate: 'Prime + 2% and up',
+        reqs: ['Personal credit score of 520+', '$50,000+ deposited monthly in your business bank account'], det: [], docs: ['Information about your inventory'] },
+      es: { name: 'Financiamiento de inventario', sum: 'Fondos para comprar inventario, respaldados por el mismo inventario.', collat: 'Inventario', amt: '$50,000 – $15 millones', term: 'Hasta 1 año', rate: 'Prime + 2% o más',
+        reqs: ['Puntaje de crédito personal de 520+', '$50,000+ depositados al mes en su cuenta bancaria comercial'], det: [], docs: ['Información sobre su inventario'] } },
+    { key: 'cre', form: 'Commercial Real Estate', hero: 1,
+      en: { name: 'Commercial Real Estate', sum: 'Use investment or commercial property as collateral, or finance a purchase.', collat: 'Commercial real estate', amt: '$50,000 – $10 million', term: '12 months to 30 years, depending on the program', rate: '7.99% and up',
+        reqs: ['Personal credit score of 650+'],
+        det: ['Using property as collateral: you own an investment home or commercial property, a physical building with a tenant, equity in the property, and monthly revenue to support payments.', 'Buying property: 660+ credit for first-time investors, or 620+ if you have done at least 5 fix-and-flips in the last 3 years.', 'Buying property: no judgments, tax liens or bankruptcy in the last 3 years.', 'Buying property: 15–30% down plus closing costs.', 'Not for a primary residence.'],
+        docs: ['Application', 'Real estate sheet', '3–6 months of business bank statements', 'Personal financial statement'] },
+      es: { name: 'Bienes raíces comerciales', sum: 'Use una propiedad de inversión o comercial como garantía, o financie una compra.', collat: 'Bienes raíces comerciales', amt: '$50,000 – $10 millones', term: 'De 12 meses a 30 años, según el programa', rate: 'Desde 7.99%',
+        reqs: ['Puntaje de crédito personal de 650+'],
+        det: ['Usar una propiedad como garantía: ser dueño de una casa de inversión o propiedad comercial, un edificio con inquilino, plusvalía en la propiedad e ingresos mensuales para cubrir los pagos.', 'Comprar una propiedad: crédito de 660+ para inversionistas nuevos, o 620+ si ha hecho al menos 5 renovaciones para reventa en los últimos 3 años.', 'Comprar una propiedad: sin juicios, gravámenes fiscales ni bancarrota en los últimos 3 años.', 'Comprar una propiedad: 15–30% de pago inicial más costos de cierre.', 'No aplica para vivienda principal.'],
+        docs: ['Solicitud', 'Hoja de la propiedad', '3–6 meses de estados de cuenta comerciales', 'Estado financiero personal'] } },
+    { key: 'equipment', form: 'Equipment Financing', hero: 1,
+      en: { name: 'Equipment Financing', sum: 'A loan for machines, vehicles or other equipment, backed by the equipment.', collat: 'Equipment worth $35,000 or more', amt: 'Up to $5 million', term: 'Variable', rate: '6.25% – 25%',
+        reqs: ['Personal credit score of 500+', '2+ years in business'],
+        det: ['Buying equipment: $10,000+ deposited monthly in your business bank account.', 'Using equipment you already bought as collateral: bought within the last 30–45 days with cash or a credit card, with an invoice showing it could have been bought from an equipment vendor.'],
+        docs: ['Equipment invoice', '6 months of business bank statements showing revenue to support the payment'] },
+      es: { name: 'Financiamiento de equipos', sum: 'Un préstamo para máquinas, vehículos u otros equipos, respaldado por el mismo equipo.', collat: 'Equipo con valor de $35,000 o más', amt: 'Hasta $5 millones', term: 'Variable', rate: '6.25% – 25%',
+        reqs: ['Puntaje de crédito personal de 500+', '2+ años en el negocio'],
+        det: ['Comprar equipo: $10,000+ depositados al mes en su cuenta bancaria comercial.', 'Usar como garantía un equipo ya comprado: comprado en los últimos 30–45 días en efectivo o con tarjeta, con una factura que muestre que pudo comprarse a un proveedor de equipos.'],
+        docs: ['Factura del equipo', '6 meses de estados de cuenta comerciales que muestren ingresos para cubrir el pago'] } },
+    { key: 'retirement', form: 'Unsure, please advise',
+      en: { name: 'Retirement Account Financing', sum: 'Use a 401(k) or IRA to fund your business.', collat: '401(k) or IRA', amt: 'Up to 100% of the account value that can be rolled over', term: '5 years, if it applies', rate: 'Prime + 2%, plus fees of $3,500 to $5,000',
+        reqs: ['No credit minimum', '$35,000+ in the 401(k) or IRA', 'For a 401(k): you no longer contribute to it and no longer work for the company that offers it'], det: [], docs: ['Most recent 401(k) or IRA statement'] },
+      es: { name: 'Financiamiento con cuentas de retiro', sum: 'Use un 401(k) o IRA para financiar su negocio.', collat: '401(k) o IRA', amt: 'Hasta el 100% del valor transferible de la cuenta', term: '5 años, si aplica', rate: 'Prime + 2%, más cargos de $3,500 a $5,000',
+        reqs: ['Sin puntaje mínimo', '$35,000+ en el 401(k) o IRA', 'Para un 401(k): ya no aporta a él y ya no trabaja para la empresa que lo ofrece'], det: [], docs: ['Estado de cuenta más reciente del 401(k) o IRA'] } },
+    { key: 'securities', form: 'Unsure, please advise',
+      en: { name: 'Securities-Backed Financing', sum: 'Borrow against stocks, bonds and treasuries while they stay in your name.', collat: 'Stocks, bonds, treasuries and other securities', amt: '$50,000 and up', term: 'Flexible', rate: '3% – 8%',
+        reqs: ['No credit minimum', '$75,000+ in stocks, or $60,000+ in bonds and treasuries', 'Publicly traded and 100% vested', 'Not retirement accounts', 'No defaults on government debt, including student loans, and no bankruptcy or foreclosure in the past 3 years'],
+        det: ['Up to 90% of value.', 'Your securities stay in your name.'], docs: ['Most recent securities statement', 'Photo ID (driver’s license)'] },
+      es: { name: 'Financiamiento con valores', sum: 'Pida prestado con sus acciones, bonos y bonos del tesoro como respaldo, sin dejar de ser suyos.', collat: 'Acciones, bonos, bonos del tesoro y otros valores', amt: 'Desde $50,000', term: 'Flexible', rate: '3% – 8%',
+        reqs: ['Sin puntaje mínimo', '$75,000+ en acciones, o $60,000+ en bonos y bonos del tesoro', 'Que coticen en bolsa y estén 100% adquiridos', 'No pueden ser cuentas de retiro', 'Sin incumplimientos en deudas del gobierno, incluidos préstamos estudiantiles, y sin bancarrota ni ejecución hipotecaria en los últimos 3 años'],
+        det: ['Hasta el 90% del valor.', 'Sus valores siguen a su nombre.'], docs: ['Estado de cuenta de valores más reciente', 'Identificación con foto (licencia de conducir)'] } },
+    { key: 'insurance', form: 'Unsure, please advise',
+      en: { name: 'Insurance Book of Business Financing', sum: 'Loans for insurance agencies, based on their commission income.', collat: 'Book of business report (12-month commission breakdown by carrier)', amt: '$50,000 – $50 million', term: 'Up to 12 years', rate: 'Variable',
+        reqs: [], det: ['For buying an agency, working capital or restructuring business debt.', 'Commission-based loans.', 'Interest-only options.'],
+        docs: ['Application', 'Personal financial statement', 'Book of business report', 'Year-to-date profit and loss', 'Most recent balance sheet', '2 years of business tax returns'] },
+      es: { name: 'Financiamiento de cartera de seguros', sum: 'Préstamos para agencias de seguros, basados en sus ingresos por comisiones.', collat: 'Informe de cartera (comisiones de 12 meses por aseguradora)', amt: '$50,000 – $50 millones', term: 'Hasta 12 años', rate: 'Variable',
+        reqs: [], det: ['Para comprar una agencia, capital de trabajo o reestructurar deudas del negocio.', 'Préstamos basados en comisiones.', 'Opciones de solo intereses.'],
+        docs: ['Solicitud', 'Estado financiero personal', 'Informe de cartera', 'Pérdidas y ganancias del año a la fecha', 'Balance general más reciente', '2 años de declaraciones de impuestos del negocio'] } }
+  ];
+  var ICON = {
+    doc: '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/>',
+    net: '<circle cx="12" cy="5" r="2.5"/><circle cx="5" cy="18" r="2.5"/><circle cx="19" cy="18" r="2.5"/><path d="M11 7.2 6.3 15.8M13 7.2l4.7 8.6M7.5 18h9"/>',
+    gauge: '<path d="M4 16a8 8 0 1 1 16 0"/><path d="M12 16l4-5"/><circle cx="12" cy="16" r="1.2"/>',
+    check: '<circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.7 2.7L16 9.5"/>',
+    cal: '<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/>',
+    chart: '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+    users: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6 6 0 0 1 3.5 6"/>',
+    talk: '<path d="M21 12a8 8 0 0 1-11.7 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/>',
+    screen: '<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/>',
+    coin: '<circle cx="12" cy="12" r="9"/><path d="M15 9.5c-.5-1-1.6-1.5-3-1.5-1.7 0-3 .8-3 2s1.3 1.7 3 2 3 .8 3 2-1.3 2-3 2c-1.4 0-2.5-.5-3-1.5M12 6.5v11"/>',
+    chev: '<path d="M9 6l6 6-6 6"/>', x: '<path d="M6 6l12 12M18 6L6 18"/>'
+  };
+  function svg(k) { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + ICON[k] + '</svg>'; }
   var T = lang === 'es' ? ES : EN;
   document.documentElement.lang = lang;
+  function P(p) { return p[lang]; }
 
   function esc(v) { return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function opt(list, label) { return '<option value="">' + esc(label) + '</option>' + list.map(function (v) { return '<option>' + esc(v) + '</option>'; }).join(''); }
@@ -157,16 +325,31 @@
       + '<header><div class="in">' + logos + '<span class="tag">' + esc(tag) + '</span></div></header>' + body
       + '<footer><div class="in"><span>' + esc(phone) + ' · ' + esc(email) + ' · ' + TBF_HOURS + '</span><span><a href="' + SITE + '/terms-of-use" target="_blank" rel="noopener">' + esc(T.terms) + '</a> · <a href="' + SITE + '/privacy-policy" target="_blank" rel="noopener">' + esc(T.privacy) + '</a></span><span>© ' + new Date().getFullYear() + ' The Business Funders. ' + esc(T.rights) + '</span></div></footer>';
   }
+  function iconCards(list, icons, cls) { return '<div class="cards ' + cls + '">' + list.map(function (c, i) { return '<div class="card"><span class="ic">' + svg(icons[i]) + '</span><h3>' + esc(c[0]) + '</h3><p>' + esc(c[1]) + '</p></div>'; }).join('') + '</div>'; }
+  function progDialog(p) {
+    var t = P(p);
+    function list(h, items) { return items.length ? '<div><h3>' + esc(h) + '</h3><ul>' + items.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul></div>' : ''; }
+    return '<div class="hd"><div><h2 id="pd-title">' + esc(t.name) + '</h2><p>' + esc(t.sum) + '</p></div><button class="x" data-close aria-label="' + esc(T.close) + '">' + svg('x') + '</button></div>'
+      + '<div class="bd"><div class="facts"><div><span>' + esc(T.fAmt) + '</span><b>' + esc(t.amt) + '</b></div><div><span>' + esc(T.fTerm) + '</span><b>' + esc(t.term) + '</b></div><div><span>' + esc(T.fRate) + '</span><b>' + esc(t.rate) + '</b></div><div><span>' + esc(T.fCollat) + '</span><b>' + esc(t.collat) + '</b></div></div>'
+      + list(T.hReq, t.reqs) + list(T.hDet, t.det) + list(T.hDocs, t.docs)
+      + '<p class="note">' + esc(T.reqNote) + '</p><button class="btn" data-apply="' + p.key + '">' + esc(T.applyFor) + '</button></div>';
+  }
   function bizPage() {
-    return shell(T.bizTag, '<section class="hero"><div class="in hero-grid"><div class="hero-copy"><h1>' + esc(T.bizH1) + '</h1><p class="sub">' + esc(T.bizSub) + '</p><ul>' + T.list.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul></div>'
+    var heroList = PROGRAMS.filter(function (p) { return p.hero; }).map(function (p) { return '<li><button type="button" data-prog="' + p.key + '"><span>' + esc(P(p).name) + '</span>' + svg('chev') + '</button></li>'; }).join('');
+    var progCards = '<div class="cards c3">' + PROGRAMS.map(function (p) { var t = P(p); return '<button type="button" class="card prog" data-prog="' + p.key + '"><h3>' + esc(t.name) + '</h3><span class="amt">' + esc(t.amt) + '</span><p>' + esc(t.sum) + '</p><span class="more">' + esc(T.seeReq) + ' →</span></button>'; }).join('') + '</div>';
+    var mock = '<div class="mock" aria-hidden="true"><div class="win"><b>' + esc(T.portalT) + '</b><ol>' + T.portalSteps.map(function (s, i) { return '<li class="' + (i < 3 ? 'ok' : i === 3 ? 'now' : '') + '"><i>' + (i < 3 ? '✓' : i + 1) + '</i>' + esc(s) + '</li>'; }).join('') + '</ol><div class="offer"><span>' + esc(T.offerT) + '</span><span>' + esc(T.review) + '</span></div></div></div>';
+    return shell(T.bizTag, '<section class="hero"><div class="in hero-grid"><div class="hero-copy"><h1>' + esc(T.bizH1) + '</h1><p class="sub">' + esc(T.bizSub) + '</p><ul class="plist">' + heroList + '<li><a class="all" href="#programs">' + esc(T.seeAll) + '</a></li></ul><p class="hint">' + esc(T.tapHint) + '</p></div>'
       + '<form class="form" id="lead-form" data-kind="biz" novalidate><h2>' + esc(T.formT) + '</h2><p>' + esc(T.formS) + '</p><div class="fields">'
       + inp('first', T.first) + inp('last', T.last) + inp('company', T.company) + inp('email', T.email, 'email') + inp('phone', T.bizPhone, 'tel') + inp('mobile', T.mobile, 'tel')
       + sel('score', T.score, SCORES) + sel('industry', T.industry, INDUSTRIES) + sel('tib', T.tib, TIB) + sel('sales', T.sales, SALES) + sel('product', T.product, PRODUCTS.map(function (p) { return p.name; })) + sel('state', T.state, US_STATES) + sel('web', T.web, [T.yes, T.no], 'full')
-      + '</div>' + hp() + consent() + '<button class="btn">' + esc(T.apply) + '</button><p class="note" style="text-align:center">' + esc(T.full) + ' <a href="' + link('apply') + '">' + esc(T.appT) + '</a></p></form></div></section>'
-      + '<section class="band"><div class="in"><div class="center"><h2>' + esc(T.whatH) + '</h2><p>' + esc(T.whatP) + '</p></div>' + cards(T.whyCards, 'c4', false, true) + '</div></section>'
-      + '<section class="band soft"><div class="in"><div class="center"><h2>' + esc(T.readyH) + '</h2><p>' + esc(T.readyP) + '</p></div>' + cards(T.ready, 'c3', false, true) + '</div></section>'
-      + '<section class="band"><div class="in"><div class="center"><h2>' + esc(T.stepsH) + '</h2></div>' + cards(T.steps, 'c3', true) + '</div></section>'
-      + '<section class="band soft"><div class="in"><p class="note" style="text-align:center;font-size:15px">' + esc(T.feeNote) + '</p></div></section><section class="band cta"><div class="in"><h2>' + esc(T.ctaH) + '</h2><a class="btn" href="#lead-form">' + esc(T.ctaB) + '</a></div></section>');
+      + '</div><input type="hidden" name="program" id="program">' + hp() + consent() + '<button class="btn">' + esc(T.apply) + '</button><p class="note" style="text-align:center">' + esc(T.full) + ' <a href="' + link('apply') + '">' + esc(T.appT) + '</a></p></form></div></section>'
+      + '<section class="band"><div class="in"><div class="center"><h2>' + esc(T.whatH) + '</h2><p>' + esc(T.whatP) + '</p></div><div class="split"><div class="photo"><img src="img/deal.jpg" alt="" loading="lazy"><a class="btn" href="#lead-form">' + esc(T.formT) + '</a></div>' + iconCards(T.whyCards, ['doc', 'net', 'gauge', 'check'], 'c2') + '</div></div></section>'
+      + '<section class="band soft" id="programs"><div class="in"><div class="center"><h2>' + esc(T.progH) + '</h2><p>' + esc(T.progP) + '</p></div>' + progCards + '</div></section>'
+      + '<section class="band"><div class="in"><div class="center"><h2>' + esc(T.readyH) + '</h2><p>' + esc(T.readyP) + '</p></div><div class="qual">' + T.ready.map(function (c, i) { return '<div><span class="ic">' + svg(['cal', 'chart', 'gauge'][i]) + '</span><div><h3>' + esc(c[0]) + '</h3><p>' + esc(c[1]) + '</p></div></div>'; }).join('') + '</div></div></section>'
+      + '<section class="band soft"><div class="in"><div class="center"><h2>' + esc(T.bestH) + '</h2></div>' + iconCards(T.bestCards, ['users', 'talk', 'screen', 'coin'], 'c4') + '</div></section>'
+      + '<section class="band"><div class="in"><div class="center"><h2>' + esc(T.stepsH) + '</h2></div><div class="split">' + mock + '<div class="stepl">' + T.steps.map(function (s, i) { return '<div><span class="ic">' + (i + 1) + '</span><div><h3>' + esc(s[0]) + '</h3><p>' + esc(s[1]) + '</p></div></div>'; }).join('') + '</div></div></div></section>'
+      + '<section class="band soft"><div class="in"><p class="note" style="text-align:center;font-size:15px">' + esc(T.feeNote) + '</p></div></section><section class="band cta"><div class="in"><h2>' + esc(T.ctaH) + '</h2><a class="btn" href="#lead-form">' + esc(T.ctaB) + '</a></div></section>'
+      + '<dialog class="pd" id="pd" aria-labelledby="pd-title"></dialog>');
   }
   function partnerPage() {
     return shell(T.partnerTag, '<section class="hero"><div class="in hero-grid"><div class="hero-copy"><h1>' + esc(T.partnerH1) + '</h1><p class="sub">' + esc(T.partnerSub) + '</p><ul>' + T.perks.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul></div>'
@@ -201,6 +384,26 @@
   addTags(cfg.tracking && cfg.tracking[page === 'partner' ? 'partner' : 'biz']);
 
   var pr = document.getElementById('print'); if (pr) pr.addEventListener('click', function () { document.getElementById('lead-form').reset(); window.print(); });
+
+  /* Program details: any [data-prog] opens its requirements; Apply picks the product on the form. */
+  var pd = document.getElementById('pd');
+  if (pd) {
+    document.addEventListener('click', function (e) {
+      var o = e.target.closest('[data-prog]');
+      if (o) { var p = PROGRAMS.filter(function (x) { return x.key === o.getAttribute('data-prog'); })[0]; if (!p) return; pd.innerHTML = progDialog(p); pd.showModal(); pd.querySelector('.x').focus(); return; }
+      if (e.target.closest('[data-close]') || e.target === pd) { pd.close(); return; }
+      var a = e.target.closest('[data-apply]');
+      if (a) {
+        var q = PROGRAMS.filter(function (x) { return x.key === a.getAttribute('data-apply'); })[0];
+        pd.close();
+        var f = document.getElementById('lead-form');
+        f.product.value = q.form; f.program.value = q.en.name; f.program.setAttribute('data-form', q.form);
+        var box = f.product.closest('.f'); if (box) box.classList.remove('bad');
+        f.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+        setTimeout(function () { f.first.focus({ preventScroll: true }); }, 400);
+      }
+    });
+  }
   var form = document.getElementById('lead-form');
   form.addEventListener('submit', function (e) {
     e.preventDefault();
@@ -214,7 +417,9 @@
     var d = {}; new FormData(form).forEach(function (v, k) { d[k] = v; });
     var kind = form.getAttribute('data-kind');
     if (kind === 'apply') d.note = ['Full application.', d.dba && 'DBA: ' + d.dba, 'Address: ' + d.address + ', ' + d.city + ', ' + d.state + ' ' + d.zip, 'Type: ' + d.entity, 'Started: ' + d.start, 'Owner share: ' + d.pct + '%', 'Requested: ' + d.amount, 'Monthly sales: ' + d.monthly, d.use && 'Use: ' + d.use].filter(Boolean).join(' ');
-    else if (kind === 'biz') d.note = 'State: ' + d.state + '. Has website: ' + d.web + '. Mobile: ' + d.mobile + '.';
+    if (form.program && form.program.getAttribute('data-form') !== d.product) d.program = '';
+    if (kind === 'biz') d.note = (d.program ? 'Program viewed: ' + d.program + '. ' : '') + 'State: ' + d.state + '. Has website: ' + d.web + '. Mobile: ' + d.mobile + '.' + (lang === 'es' ? ' Spanish page.' : '');
+    delete d.program;
     if (kind === 'partner' && d.password.length < 10) { var pb = form.querySelector('[data-f="password"]'); pb.classList.add('bad'); pb.querySelector('.e').textContent = T.tooShort; form.password.focus(); return; }
     d.consent = true; if (d.bizPhone && !d.mobile) d.mobile = d.bizPhone;
     var btn = form.querySelector('button:not([type=button])'), label = btn.textContent; btn.disabled = true; btn.textContent = T.sending;

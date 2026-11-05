@@ -381,7 +381,7 @@
         sample: false, funding: x[6].data || [],
         profile: { first: me.first || '', last: me.last || '', email: me.email || '', phone: me.phone || '', company: me.company || '', code: me.code },
         site: Object.assign(defaultSite(), me.site || {}), done: me.done || [],
-        news: (x[5].data || []).map(function (n) { return { at: n.created_at, text: n.text }; }),
+        news: (x[5].data || []).map(function (n) { return { at: n.created_at, text: n.text, author: n.author || '' }; }),
         deals: (x[1].data || []).map(mapDeal).concat(net),
         partners: (x[2].data || []).map(function (r) { return { id: ++i, created: r.created_at, first: r.first || '', last: r.last || '', email: '', company: r.company || '', phone: '', status: 'Signed', notes: '' }; })
           .concat((x[4].data || []).map(function (r) { return { id: ++i, created: r.created_at, first: r.first || '', last: r.last || '', email: r.email || '', company: r.company || '', phone: r.phone || '', status: 'Invited', notes: r.notes || '' }; }))
@@ -397,7 +397,7 @@
       + (recovery ? '' : '<div class="field"><label for="l-email">Email</label><input id="l-email" name="email" type="email" autocomplete="username" required></div>')
       + '<div class="field"><label for="l-pass">Password</label><input id="l-pass" name="password" type="password" autocomplete="' + (recovery ? 'new-password' : 'current-password') + '" required></div>'
       + '<p class="login-err" id="l-err"' + (msg ? '' : ' hidden') + '>' + esc(msg || '') + '</p><button class="btn primary">' + (recovery ? 'Save password' : 'Log in') + '</button>'
-      + (recovery ? '' : '<button type="button" class="link-btn" data-act="forgot">Forgot your password?</button><p style="color:var(--muted)">Not a partner yet? <a href="site.html?page=partner">Join the program</a></p>')
+      + (recovery ? '' : '<p style="color:var(--muted)">First time here, or forgot your password? <a href="client.html#setup">Set your password</a></p><p style="color:var(--muted)">Not a partner yet? <a href="site.html?page=partner">Join the program</a></p>')
       + '</form></div>';
     box.querySelectorAll('img[data-logo]').forEach(function (i) { i.src = LOGO; });
   }
@@ -494,7 +494,7 @@
       + '<span class="bar"><i style="width:' + pct + '%"></i></span>'
       + '<p style="color:var(--muted);font-size:15px">' + L.cur + ' of 10 funded in ' + esc(L.curName) + '. ' + (left ? 'Fund ' + left + ' more to earn 40% next month.' : 'You are at 40% next month.') + '</p></section>';
   }
-  function newsCard() { if (!state.news.length) return ''; return '<section class="card form-sec"><h2>News</h2>' + state.news.slice().reverse().map(function (n) { return '<div class="note" style="border-top:0;padding-top:0">' + esc(n.text) + '<small>' + date(n.at) + '</small></div>'; }).join('') + '</section>'; }
+  function newsCard() { if (!state.news.length) return ''; return '<section class="card form-sec"><h2>News</h2>' + state.news.slice().reverse().map(function (n) { return '<div class="note" style="border-top:0;padding-top:0">' + esc(n.text) + '<small>' + (n.author ? 'From ' + esc(n.author) + ' · ' : '') + date(n.at) + '</small></div>'; }).join('') + '</section>'; }
   function linkRow(label, url, id) {
     return '<div class="link-row"><label for="' + id + '">' + esc(label) + '</label><div><input id="' + id + '" readonly value="' + esc(url) + '"><button class="btn small" data-act="copy" data-v="' + esc(url) + '">' + icon('copy') + 'Copy</button></div></div>';
   }

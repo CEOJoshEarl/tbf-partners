@@ -56,6 +56,7 @@
   .filters { display: flex; gap: 8px; flex-wrap: wrap; } .filters input, .filters select { height: 38px; padding: 0 10px; border: 1px solid #CDD4E0; border-radius: 8px; background: #fff; } .filters input { flex: 1; min-width: 200px; }
   .field { display: flex; flex-direction: column; gap: 4px; min-width: 0; } .field label { font-size: 13px; font-weight: 600; color: var(--ink); } .field input, .field select, .field textarea { width: 100%; min-height: 40px; padding: 8px 10px; border: 1px solid #CDD4E0; border-radius: 8px; background: #fff; }
   .fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; } .full { grid-column: 1 / -1; }
+  .news-form { flex-wrap: wrap; } .news-from { flex: 0 1 220px !important; }
   .inline { display: flex; gap: 8px; align-items: flex-end; } .inline .field { flex: 1; }
   .tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; } .tile { background: var(--soft); border-radius: 8px; padding: 8px 10px; } .tile span { display: block; font-size: 12px; color: var(--muted); } .tile b { font-size: 20px; font-weight: 800; color: var(--ink); }
   .round { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
@@ -243,7 +244,7 @@
       var funded = ds.reduce(function (t, d) { return t + (+d.funded_amt || 0); }, 0), earned = ds.reduce(function (t, d) { return t + (+d.commission || 0); }, 0);
       return '<tr><td><b>' + esc((p.first + ' ' + p.last).trim()) + '</b><small>' + esc(p.company || '') + '</small></td><td>' + esc(p.code) + '<small>' + (p.referred_by ? 'Under ' + esc(partnerName(p.referred_by)) : 'Direct') + '</small></td><td>' + esc(p.email) + '<small>' + esc(p.phone || '') + '</small></td><td class="num">' + ds.length + '</td><td class="num">' + money(funded) + '</td><td class="num"><b>' + money(earned) + '</b></td></tr>';
     }).join('');
-    return '<div class="head"><div><h1>Partners</h1><p class="sub">' + S.partners.length + ' signed up.</p></div></div><div class="tablewrap">' + (rows ? '<table><thead><tr><th>Partner</th><th>Code</th><th>Contact</th><th class="num">Clients</th><th class="num">Funded</th><th class="num">Commission</th></tr></thead><tbody>' + rows + '</tbody></table>' : '<p class="empty" style="padding:16px">No partners yet.</p>') + '</div>';
+    return '<div class="head"><div><h1>Partners</h1><p class="sub">' + S.partners.length + ' signed up.</p></div><button class="btn primary" data-a="add-partner">Add partner</button></div><div class="tablewrap">' + (rows ? '<table><thead><tr><th>Partner</th><th>Code</th><th>Contact</th><th class="num">Clients</th><th class="num">Funded</th><th class="num">Commission</th></tr></thead><tbody>' + rows + '</tbody></table>' : '<p class="empty" style="padding:16px">No partners yet.</p>') + '</div>';
   }
   function payoutsPage() {
     var rows = owedItems().map(function (d) {
@@ -252,11 +253,25 @@
     }).join('');
     return '<div class="head"><div><h1>Payouts</h1><p class="sub">Commissions and overrides owed, once client fees are collected. Due within 10 business days.</p></div></div><div class="tablewrap">' + (rows ? '<table><thead><tr><th>Client</th><th>Partner</th><th class="num">Commission</th><th>Override</th><th></th></tr></thead><tbody>' + rows + '</tbody></table>' : '<p class="empty" style="padding:16px">Nothing owed right now.</p>') + '</div>';
   }
+  function newsFrom() {
+    try { var s = localStorage.getItem('tbf-news-from'); if (s) return s; } catch (e) {}
+    var n = S.me ? (S.me.first + ' ' + S.me.last).trim() : ''; return n === 'Team TBF' ? '' : n;
+  }
   function newsPage() {
-    return '<div class="head"><div><h1>Partner news</h1><p class="sub">Shows on every partner\'s home page.</p></div></div><section class="card"><form class="inline" id="f-news"><div class="field"><label for="nw">New update</label><input id="nw" name="text" required></div><button class="btn primary">Post</button></form>' + (S.news.map(function (n) { return '<div class="note">' + esc(n.text) + '<small>' + date(n.created_at) + '</small></div>'; }).join('') || '<p class="empty">Nothing posted yet.</p>') + '</section>';
+    return '<div class="head"><div><h1>Partner news</h1><p class="sub">Shows on every partner\'s home page.</p></div></div><section class="card"><form class="inline news-form" id="f-news"><div class="field"><label for="nw">New update</label><input id="nw" name="text" required></div><div class="field news-from"><label for="nf">From (your name)</label><input id="nf" name="author" required maxlength="80" value="' + esc(newsFrom()) + '"></div><button class="btn primary">Post</button></form>' + (S.news.map(function (n) { return '<div class="note">' + esc(n.text) + '<small>' + (n.author ? 'From ' + esc(n.author) + ' · ' : '') + date(n.created_at) + (n.author_email ? ' · ' + esc(n.author_email) : '') + '</small></div>'; }).join('') || '<p class="empty">Nothing posted yet.</p>') + '</section>';
   }
 
   /* ---------- Forms ---------- */
+  function openPartner() {
+    modal.innerHTML = '<form class="dlg" id="f-partner"><div class="head"><h2>Add partner</h2><button type="button" class="btn sm" data-a="close">Close</button></div><div class="fields">'
+      + [['first', 'First name', 'text', 1], ['last', 'Last name', 'text', 1], ['email', 'Email', 'email', 1], ['phone', 'Phone', 'tel', 0]].map(function (x) { return '<div class="field"><label for="p-' + x[0] + '">' + x[1] + '</label><input id="p-' + x[0] + '" name="' + x[0] + '" type="' + x[2] + '"' + (x[3] ? ' required' : '') + '></div>'; }).join('')
+      + '<div class="field"><label for="p-company">Company</label><input id="p-company" name="company"></div><div class="field"><label for="p-title">Title</label><input id="p-title" name="title"></div>'
+      + '<div class="field full"><label for="p-ref">Under another partner (optional)</label><select id="p-ref" name="ref"><option value="">No, this is a direct partner</option>' + S.partners.map(function (p) { return '<option value="' + esc(p.code) + '">' + esc((p.first + ' ' + p.last).trim() + ' (' + p.code + ')') + '</option>'; }).join('') + '</select></div></div>'
+      + '<label class="tick"><input type="checkbox" name="send" checked><span>Email them the Partner Package now</span></label>'
+      + '<p class="sub">They set their own password on the partner login, using a code sent to this email.</p>'
+      + '<p class="err" id="a-err" hidden></p><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary">Add partner</button></div></form>';
+    modal.showModal();
+  }
   function openClient() {
     modal.innerHTML = '<form class="dlg" id="f-client"><div class="head"><h2>Add client</h2><button type="button" class="btn sm" data-a="close">Close</button></div><div class="fields">'
       + [['first', 'First name'], ['last', 'Last name'], ['email', 'Email', 'email'], ['phone', 'Phone', 'tel']].map(function (x) { return '<div class="field"><label for="c-' + x[0] + '">' + x[1] + '</label><input id="c-' + x[0] + '" name="' + x[0] + '" type="' + (x[2] || 'text') + '" required></div>'; }).join('')
@@ -310,9 +325,10 @@
     else if (f.id === 'f-code') { var email = f.getAttribute('data-email'), pw = f.password.value; clientApi({ action: 'verify', email: email, code: f.code.value.trim(), password: pw }).then(function () { return sb.auth.signInWithPassword({ email: email, password: pw }); }).then(function (r) { if (r.error) throw r.error; return enter(); }).catch(function (x) { back(); err(x.message); }); }
     else if (f.id === 'f-app') { back(); saveApp(f); }
     else if (f.id === 'f-client') { submitLead('deal', '', { first: f.first.value.trim(), last: f.last.value.trim(), email: f.email.value.trim(), phone: f.phone.value.trim(), company: f.company.value.trim(), product: f.product.value }).then(function (j) { modal.close(); toast('Client added'); return load().then(function () { location.hash = '#deal/' + j.deal.id; render(); }); }).catch(function (x) { back(); aerr(x.message); }); }
+    else if (f.id === 'f-partner') { sb.auth.getSession().then(function (s) { return submitLead('team_partner', f.ref.value, { first: f.first.value.trim(), last: f.last.value.trim(), email: f.email.value.trim(), phone: f.phone.value.trim(), company: f.company.value.trim(), title: f.title.value.trim(), send: f.send.checked }, s.data.session.access_token); }).then(function (j) { modal.close(); toast(j.sent === false ? 'Partner added as ' + j.code + ', but the package did not send.' : 'Partner added as ' + j.code); return refresh(); }).catch(function (x) { back(); aerr(x.message); }); }
     else if (f.id === 'f-note') sb.rpc('add_deal_note', { p_deal: d.id, p_text: f.text.value.trim() }).then(function (r) { back(); if (r.error) toast('That did not save.'); else refresh(); });
     else if (f.id === 'f-item') saveDeal(d, { items: (d.items || []).concat([{ text: f.text.value.trim(), done: false }]) }, 'Sent to the partner');
-    else if (f.id === 'f-news') sb.from('news').insert({ text: f.text.value.trim() }).then(function (r) { back(); if (r.error) toast('That did not post.'); else { toast('Posted'); refresh(); } });
+    else if (f.id === 'f-news') { var from = f.author.value.trim(); try { localStorage.setItem('tbf-news-from', from); } catch (x) {} sb.from('news').insert({ text: f.text.value.trim(), author: from }).then(function (r) { back(); if (r.error) toast('That did not post.'); else { toast('Posted'); refresh(); } }); }
   });
   document.addEventListener('click', function (e) {
     var t = e.target.closest('[data-a],[id],[data-open]'); if (!t) return;
@@ -323,6 +339,7 @@
     else if (t.getAttribute('data-open')) location.hash = '#deal/' + t.getAttribute('data-open');
     else if (a === 'close') modal.close();
     else if (a === 'add-client') openClient();
+    else if (a === 'add-partner') openPartner();
     else if (a === 'add-app') openApp(d);
     else if (a === 'edit-app') openApp(d, S.apps.filter(function (x) { return String(x.id) === t.getAttribute('data-id'); })[0]);
     else if (a === 'del-app') { if (window.confirm('Delete this application?')) sb.from('deal_applications').delete().eq('id', t.getAttribute('data-id')).then(function () { modal.close(); refresh(); }); }

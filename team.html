@@ -60,6 +60,7 @@
   .inline { display: flex; gap: 8px; align-items: flex-end; } .inline .field { flex: 1; }
   .tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; } .tile { background: var(--soft); border-radius: 8px; padding: 8px 10px; } .tile span { display: block; font-size: 12px; color: var(--muted); } .tile b { font-size: 20px; font-weight: 800; color: var(--ink); }
   .round { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  .grp { padding: 8px 12px 4px; font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); border-top: 1px solid var(--line); }
   .round-h { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; background: var(--soft); padding: 9px 12px; font-size: 14px; } .round-h b { color: var(--ink); }
   .app { display: flex; justify-content: space-between; gap: 12px; width: 100%; background: #fff; border: 0; border-top: 1px solid var(--line); padding: 9px 12px; text-align: left; cursor: pointer; } .app:hover { background: var(--brand-soft); } .app small { display: block; font-size: 13px; color: var(--muted); } .app b { color: var(--ink); } .app .r { flex: none; display: flex; flex-direction: column; align-items: flex-end; gap: 3px; }
   .round-f { display: flex; justify-content: flex-end; align-items: center; gap: 8px; flex-wrap: wrap; padding: 9px 12px; border-top: 1px solid var(--line); font-size: 14px; }
@@ -205,14 +206,14 @@
   }
   function dealTable(rows) {
     if (!rows.length) return '<p class="empty" style="padding:16px">No clients match.</p>';
-    return '<table><thead><tr><th>Client</th><th>Stage</th><th>Partner</th><th class="num">Approved</th><th class="num">Accepted</th><th>Fee</th></tr></thead><tbody>' + rows.map(function (d) {
+    return '<table><thead><tr><th>Client</th><th>Stage</th><th>Partner</th><th class="num">All approvals</th><th class="num">Approved total</th><th>Fee</th></tr></thead><tbody>' + rows.map(function (d) {
       var F = summary(d), unpaid = F.rounds.filter(function (r) { return r.fee > 0 && !r.paid; }), late = unpaid.filter(function (r) { return r.dueBy && new Date(r.dueBy) < new Date(); }).length;
       return '<tr class="rowlink" data-open="' + d.id + '" tabindex="0"><td><b>' + esc(dealName(d)) + '</b><small>' + esc((d.first + ' ' + d.last).trim()) + '</small></td><td>' + stagePill(d) + '</td><td>' + esc(partnerName(d.partner_code)) + '</td><td class="num">' + money(F.approved) + '</td><td class="num"><b>' + money(F.accepted) + '</b></td><td>' + (late ? '<span class="pill bad">Past due</span>' : unpaid.length ? '<span class="pill warn">Due</span>' : F.accepted ? '<span class="pill good">Paid</span>' : '') + '</td></tr>';
     }).join('') + '</tbody></table>';
   }
   function appPill(a) {
     if (a.status === 'denied') return '<span class="pill bad">Denied</span>';
-    if (a.status === 'submitted') return '<span class="pill">Submitted</span>';
+    if (a.status === 'submitted') return '<span class="pill">Pending</span>';
     if (a.client_decision === 'accepted') return '<span class="pill good">Accepted</span>';
     if (a.client_decision === 'rejected') return '<span class="pill mute">Client passed</span>';
     return '<span class="pill warn">Waiting on client</span>';
@@ -222,12 +223,12 @@
     if (!d) return '<a class="back" href="#deals">‹ All clients</a><p class="empty">Client not found.</p>';
     var F = summary(d), items = d.items || [], notes = (d.notes || []).slice().reverse();
     var rounds = F.rounds.map(function (r) {
-      return '<div class="round"><div class="round-h"><b>Round ' + r.round + '</b><span class="sub">Approved ' + money(r.approved) + ' · Accepted <b>' + money(r.accepted) + '</b></span></div>'
-        + r.apps.map(function (a) { return '<button class="app" data-a="edit-app" data-id="' + a.id + '"><span><b>' + esc(a.lender) + '</b><small>' + esc(a.product || '') + (a.product ? ' · ' : '') + (a.pull_type === 'soft' ? 'Soft pull' : esc((a.bureaus || []).map(function (b) { return BUREAU[b]; }).join(', '))) + '</small></span><span class="r"><b>' + (a.status === 'approved' ? money(a.approved_amt) : '') + '</b>' + appPill(a) + '</span></button>'; }).join('')
+      return '<div class="round"><div class="round-h"><b>Round ' + r.round + '</b><span class="sub">Approved total <b>' + money(r.accepted) + '</b>' + (r.passed ? ' · Client passed ' + money(r.passed) : '') + (r.pending ? ' · ' + r.pending + ' pending' : '') + '</span></div>'
+        + appGroups(r.apps).map(function (g) { return '<div class="grp">' + g.label + ' (' + g.apps.length + ')</div>' + g.apps.map(function (a) { return '<button class="app" data-a="edit-app" data-id="' + a.id + '"><span><b>' + esc(a.lender) + '</b><small>' + (a.charge_card ? 'Charge card · ' : '') + esc(a.product || '') + (a.product ? ' · ' : '') + (a.pull_type === 'soft' ? 'Soft pull' : esc((a.bureaus || []).map(function (b) { return BUREAU[b]; }).join(', '))) + '</small></span><span class="r"><b>' + (a.status === 'approved' ? money(a.approved_amt) : '') + '</b>' + appPill(a) + '</span></button>'; }).join(''); }).join('')
         + (r.fee > 0 || r.paid ? '<div class="round-f"><span>Fee ' + F.pct + '%: <b>' + money(r.fee) + '</b></span>' + (r.paid ? '<span class="pill good">Paid ' + money(r.paid.amount) + '</span><button class="btn sm" data-a="unpay" data-r="' + r.round + '">Undo</button>' : (r.dueBy ? '<span class="pill ' + (new Date(r.dueBy) < new Date() ? 'bad">Past due ' : 'warn">Due by ') + date(r.dueBy) + '</span>' : '') + '<button class="btn sm primary" data-a="pay" data-r="' + r.round + '" data-v="' + r.fee + '">Mark paid</button>') + '</div>' : '') + '</div>';
     }).join('');
     return '<a class="back" href="#deals">‹ All clients</a><div class="head"><div><h1>' + esc(dealName(d)) + '</h1><p class="sub">' + esc(d.product || 'Product not set') + ' · ' + esc(partnerName(d.partner_code)) + '</p></div><div>' + stagePill(d) + '</div></div>'
-      + '<div class="stats"><div class="stat"><span>Approved</span><b>' + money(F.approved) + '</b></div><div class="stat"><span>Client accepted</span><b>' + money(F.accepted) + '</b></div><div class="stat"><span>Partner commission</span><b>' + money(d.commission) + '</b>' + (estFor(d, F) ? '<small>' + money(estFor(d, F)) + ' estimated</small>' : '') + '</div><div class="stat"><span>Fees collected</span><b>' + money(d.collected_fee) + '</b></div></div>'
+      + '<div class="stats"><div class="stat"><span>Approved total</span><b>' + money(F.accepted) + '</b><small>Counts until the client passes</small></div><div class="stat"><span>Client passed</span><b>' + money(F.passed) + '</b>' + (F.pending ? '<small>' + F.pending + ' pending with lenders</small>' : '') + '</div><div class="stat"><span>Partner commission</span><b>' + money(d.commission) + '</b>' + (estFor(d, F) ? '<small>' + money(estFor(d, F)) + ' estimated</small>' : '') + '</div><div class="stat"><span>Fees collected</span><b>' + money(d.collected_fee) + '</b></div></div>'
       + '<div class="file"><div class="stack"><section class="card"><div class="head"><h2>Applications</h2><button class="btn primary" data-a="add-app">Add application</button></div><div class="tiles"><div class="tile"><span>Experian inquiries</span><b>' + F.inquiries.EX + '</b></div><div class="tile"><span>Equifax inquiries</span><b>' + F.inquiries.EQ + '</b></div><div class="tile"><span>TransUnion inquiries</span><b>' + F.inquiries.TU + '</b></div></div>' + (rounds || '<p class="empty">No applications yet. Add the first one when you apply.</p>') + '</section>'
       + '<section class="card"><h2>Notes</h2><form class="inline" id="f-note"><div class="field"><label for="n">Note (the partner can see this)</label><input id="n" name="text" required></div><button class="btn">Add</button></form>' + notes.map(function (n) { return '<div class="note">' + esc(n.text) + '<small>' + esc(n.by) + ' · ' + date(n.at) + '</small></div>'; }).join('') + '</section></div>'
       + '<div class="stack"><section class="card"><h2>Move this file</h2><div class="field"><label for="st">Stage</label><select id="st">' + [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0].map(function (n) { return '<option value="' + n + '"' + (n === d.stage ? ' selected' : '') + '>' + (n ? n + ' - ' : '') + STAGES[n] + '</option>'; }).join('') + '</select></div>'
@@ -293,7 +294,8 @@
     modal.innerHTML = '<form class="dlg" id="f-app" data-id="' + (a ? a.id : '') + '" data-deal="' + d.id + '"><div class="head"><h2>' + (a ? 'Edit application' : 'Add application') + '</h2><button type="button" class="btn sm" data-a="close">Close</button></div><div class="fields">'
       + '<div class="field"><label for="a-l">Lender</label><input id="a-l" name="lender" required value="' + esc(a ? a.lender : '') + '"></div><div class="field"><label for="a-r">Round</label><input id="a-r" name="round" type="number" min="1" max="20" required value="' + round + '"></div>'
       + '<div class="field"><label for="a-p">Product</label><input id="a-p" name="product" value="' + esc(a ? a.product : '') + '"></div><div class="field"><label for="a-pt">Pull</label><select id="a-pt" name="pull_type"><option value="hard">Hard pull</option><option value="soft"' + (a && a.pull_type === 'soft' ? ' selected' : '') + '>Soft pull, no inquiry</option></select></div>'
-      + '<div class="field"><label for="a-s">Result</label><select id="a-s" name="status">' + [['submitted', 'Submitted'], ['approved', 'Approved'], ['denied', 'Denied']].map(function (o) { return '<option value="' + o[0] + '"' + ((a ? a.status : 'submitted') === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select></div><div class="field"><label for="a-a">Approved amount</label><input id="a-a" name="approved_amt" inputmode="numeric" value="' + (a && +a.approved_amt ? +a.approved_amt : '') + '"></div>'
+      + '<div class="field"><label for="a-s">Result</label><select id="a-s" name="status">' + [['submitted', 'Pending'], ['approved', 'Approved'], ['denied', 'Denied']].map(function (o) { return '<option value="' + o[0] + '"' + ((a ? a.status : 'submitted') === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select></div><div class="field"><label for="a-a">Approved amount</label><input id="a-a" name="approved_amt" inputmode="numeric" value="' + (a && +a.approved_amt ? +a.approved_amt : '') + '"></div>'
+      + '<label class="tick field full"><input type="checkbox" name="charge_card"' + (a && a.charge_card ? ' checked' : '') + '><span>Charge card (counts as ' + money(CHARGE_CARD_AMT) + ' toward funding, so the fee is ' + money(CHARGE_CARD_AMT / 10) + ' at 10%)</span></label>'
       + '<div class="field full"><label for="a-t">Terms the client sees (needed for approved offers)</label><textarea id="a-t" name="terms" rows="5" placeholder="Rate: 0% for 12 months, then 24.99%&#10;Length: 60 months&#10;Payment: $450 a month&#10;Lender fees: none">' + esc(a ? a.terms : '') + '</textarea></div></div>'
       + '<div class="field"><label>Bureau pulled</label><div style="display:flex;gap:16px;flex-wrap:wrap">' + ck('EX') + ck('EQ') + ck('TU') + '</div></div>'
       + (a && a.client_decision ? '<label class="tick"><input type="checkbox" name="reset"><span>Clear the client\'s decision (' + esc(a.client_decision) + ') so they can decide again</span></label>' : '')
@@ -303,7 +305,8 @@
   function aerr(m) { var e = document.getElementById('a-err'); e.textContent = m; e.hidden = false; }
   function saveApp(f) {
     var d = S.deals.filter(function (x) { return String(x.id) === f.getAttribute('data-deal'); })[0], id = f.getAttribute('data-id'), was = id ? S.apps.filter(function (x) { return String(x.id) === id; })[0] : null;
-    var rec = { deal_id: d.id, round: +f.round.value, lender: f.lender.value.trim(), product: f.product.value.trim(), pull_type: f.pull_type.value, status: f.status.value, approved_amt: +String(f.approved_amt.value).replace(/[^0-9.]/g, '') || 0, terms: f.terms.value.trim(), bureaus: ['EX', 'EQ', 'TU'].filter(function (b) { return f['b' + b].checked; }) };
+    var rec = { deal_id: d.id, round: +f.round.value, lender: f.lender.value.trim(), product: f.product.value.trim(), pull_type: f.pull_type.value, status: f.status.value, approved_amt: +String(f.approved_amt.value).replace(/[^0-9.]/g, '') || 0, terms: f.terms.value.trim(), charge_card: f.charge_card.checked, bureaus: ['EX', 'EQ', 'TU'].filter(function (b) { return f['b' + b].checked; }) };
+    if (rec.charge_card && rec.status === 'approved') rec.approved_amt = CHARGE_CARD_AMT;
     if (rec.pull_type === 'hard' && !rec.bureaus.length) return aerr('Pick the bureau pulled, so inquiries add up.');
     if (rec.status === 'approved' && !rec.approved_amt) return aerr('Enter the approved amount.');
     if (rec.status === 'approved' && !rec.terms) return aerr('Enter the terms, so the client can see them before deciding.');
@@ -315,8 +318,11 @@
     var newOffer = rec.status === 'approved' && (!was || was.status !== 'approved');
     (was ? sb.from('deal_applications').update(rec).eq('id', was.id) : sb.from('deal_applications').insert(rec)).then(function (r) {
       if (r.error) return aerr('That did not save. Please try again.');
-      modal.close(); toast(newOffer ? 'Saved. The client was emailed about the offer.' : 'Saved');
-      if (newOffer) sb.auth.getSession().then(function (s) { return clientApi({ action: 'notify_offer', deal: d.id }, s.data.session.access_token); }).catch(function () { toast('Saved, but the offer email did not send.'); });
+      modal.close(); toast('Saved');
+      /* No offer email before the client signs: they can't log in to see it yet. A signed agreement on any of their files counts. */
+      var signedAny = S.deals.some(function (x) { return x.agreement_signed_at && String(x.email || '').toLowerCase() === String(d.email || '').toLowerCase(); });
+      if (newOffer && !signedAny) toast('Saved. No offer email: the client has not signed the agreement yet.');
+      else if (newOffer) sb.auth.getSession().then(function (s) { return clientApi({ action: 'notify_offer', deal: d.id }, s.data.session.access_token); }).then(function (j) { toast(j && j.skipped ? 'Saved. No offer email: the client has not signed the agreement yet.' : 'Saved. The client was emailed about the offer.'); }).catch(function () { toast('Saved, but the offer email did not send.'); });
       refresh();
     });
   }

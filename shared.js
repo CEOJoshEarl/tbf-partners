@@ -76,16 +76,25 @@ function fundingSummary(apps, payments, feePct) {
   (apps || []).forEach(function (a) { nums[a.round] = 1; });
   (payments || []).forEach(function (p) { nums[p.round] = 1; });
   function inq(list) { var c = { EX: 0, EQ: 0, TU: 0 }; list.forEach(function (a) { if (a.pull_type !== 'soft') (a.bureaus || []).forEach(function (b) { if (c[b] != null) c[b]++; }); }); return c; }
-  function acc(a) { return a.status === 'approved' && (a.client_decision || a.decision) === 'accepted'; }
+  /* An approval counts toward the total (and the fee) until the client passes on it. "accepted" below means "counts". */
+  function acc(a) { return a.status === 'approved' && (a.client_decision || a.decision) !== 'rejected'; }
   function und(a) { return a.status === 'approved' && !(a.client_decision || a.decision); }
   rounds = Object.keys(nums).map(Number).sort(function (a, b) { return a - b; }).map(function (n) {
     var list = (apps || []).filter(function (a) { return a.round === n; }), pay = (payments || []).filter(function (p) { return p.round === n; })[0] || null;
     var approved = list.filter(function (a) { return a.status === 'approved'; }).reduce(function (t, a) { return t + (+a.approved_amt || 0); }, 0);
     var accepted = list.filter(acc).reduce(function (t, a) { return t + (+a.approved_amt || 0); }, 0);
     var stamps = list.filter(acc).map(function (a) { return a.approved_at ? new Date(a.approved_at).getTime() : 0; }).filter(Boolean);
-    return { round: n, apps: list, approved: approved, accepted: accepted, waiting: list.filter(und).length, inquiries: inq(list), fee: Math.round(accepted * pct) / 100, paid: pay, dueBy: stamps.length ? new Date(Math.max.apply(null, stamps) + 10 * 864e5).toISOString() : '' };
+    return { round: n, apps: list, approved: approved, accepted: accepted, passed: approved - accepted, pending: list.filter(function (a) { return a.status === 'submitted'; }).length, waiting: list.filter(und).length, inquiries: inq(list), fee: Math.round(accepted * pct) / 100, paid: pay, dueBy: stamps.length ? new Date(Math.max.apply(null, stamps) + 10 * 864e5).toISOString() : '' };
   });
-  return { rounds: rounds, approved: rounds.reduce(function (t, r) { return t + r.approved; }, 0), accepted: rounds.reduce(function (t, r) { return t + r.accepted; }, 0), inquiries: inq(apps || []), waiting: rounds.reduce(function (t, r) { return t + r.waiting; }, 0), pct: pct };
+  return { rounds: rounds, approved: rounds.reduce(function (t, r) { return t + r.approved; }, 0), accepted: rounds.reduce(function (t, r) { return t + r.accepted; }, 0), passed: rounds.reduce(function (t, r) { return t + r.passed; }, 0), pending: rounds.reduce(function (t, r) { return t + r.pending; }, 0), inquiries: inq(apps || []), waiting: rounds.reduce(function (t, r) { return t + r.waiting; }, 0), pct: pct };
+}
+/* Each charge card counts as $10,000 toward funding, so the 10% fee is $1,000 a card. */
+var CHARGE_CARD_AMT = 10000;
+/* Lenders in a round, grouped Approved, Pending, Denied (empty groups dropped). */
+function appGroups(list) {
+  return [['approved', 'Approved'], ['submitted', 'Pending'], ['denied', 'Denied']].map(function (g) {
+    return { key: g[0], label: g[1], apps: (list || []).filter(function (a) { return a.status === g[0]; }) };
+  }).filter(function (g) { return g.apps.length; });
 }
 function clientApi(body, token) {
   return fetch(SB_URL + '/functions/v1/client', { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: SB_KEY, Authorization: 'Bearer ' + (token || SB_KEY) }, body: JSON.stringify(body) })

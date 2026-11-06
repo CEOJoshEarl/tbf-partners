@@ -71,6 +71,7 @@
   .steps li { display: flex; align-items: center; gap: 12px; color: var(--muted); } .steps i { font-style: normal; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font-size: 14px; font-weight: 700; background: var(--soft); flex: none; }
   .steps li.done { color: var(--body); } .steps li.done i { background: var(--good-soft); color: var(--good); } .steps li.now { color: var(--ink); font-weight: 700; } .steps li.now i { background: var(--brand); color: #fff; }
   .round { background: var(--white); border: 1px solid var(--line); border-radius: 16px; padding: 0 18px; } .round summary { display: flex; justify-content: space-between; gap: 12px; padding: 16px 0; cursor: pointer; font-size: 17px; list-style: none; } .round summary::-webkit-details-marker { display: none; } .round summary b { color: var(--ink); } .round summary::after { content: ''; width: 8px; height: 8px; border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted); transform: rotate(45deg); align-self: center; margin: -3px 3px 0 4px; flex: none; } .round[open] summary::after { transform: rotate(-135deg); margin-top: 3px; } .round summary span { margin-left: auto; color: var(--ink); font-weight: 600; }
+  .grp { margin: 14px 0 2px; font-size: 13px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); } .grp span { font-weight: 600; text-transform: none; letter-spacing: 0; }
   .round .row b { color: var(--ink); } .round .fee { margin-bottom: 16px; } .round .fee b { color: var(--ink); }
   .offer { background: var(--white); } .offer .head b { color: var(--ink); }
   .pill.mute { background: var(--soft); color: var(--muted); }
@@ -128,7 +129,7 @@
   function bureauLine(a) { return a.pull_type === 'soft' ? 'No credit inquiry' : (a.bureaus || []).map(function (b) { return BUREAU[b] || b; }).join(', '); }
   function pill(a) {
     if (a.status === 'denied') return '<span class="pill bad">Denied</span>';
-    if (a.status === 'submitted') return '<span class="pill">Waiting on lender</span>';
+    if (a.status === 'submitted') return '<span class="pill">Pending</span>';
     if (a.decision === 'accepted') return '<span class="pill good">You accepted</span>';
     if (a.decision === 'rejected') return '<span class="pill mute">You passed</span>';
     return '<span class="pill warn">Needs your decision</span>';
@@ -160,17 +161,17 @@
   }
   function dealHtml(d) {
     var F = fundingSummary(d.apps, d.payments, d.fee_pct), offers = d.apps.filter(function (a) { return a.status === 'approved' && !a.decision; }), N = nextStep(d, F, offers), lastR = F.rounds.length ? F.rounds[F.rounds.length - 1].round : 0;
-    return '<section class="hero"><div><small>' + esc(d.company || 'Your funding') + '</small><div class="big">' + money(F.accepted) + '</div><small>Total funding you have accepted</small></div></section>'
+    return '<section class="hero"><div><small>' + esc(d.company || 'Your funding') + '</small><div class="big">' + money(F.accepted) + '</div><small>Your total approved funding</small><small>Every approval counts until you pass on it.</small></div></section>'
       + '<section class="card next ' + N[3] + '"><span class="eyebrow">' + N[0] + '</span><h2>' + esc(N[1]) + '</h2><p>' + esc(N[2]) + '</p>' + (N[4] ? '<a class="btn primary" style="align-self:flex-start" href="' + N[4] + '" target="_blank" rel="noopener">Complete my application</a>' : '') + (d.note ? '<p class="team-note"><b>From your team:</b> ' + esc(d.note) + '</p>' : '') + '</section>'
       + (offers.length ? '<section class="stack"><h2 class="sect">Offers for you</h2>' + offers.map(function (a) {
-        return '<div class="offer"><div class="head"><b>' + esc(a.lender) + (a.product ? ' · ' + esc(a.product) : '') + '</b><span class="pill">Round ' + a.round + '</span></div><div class="amt">' + money(a.approved_amt) + '</div><div class="terms"><span class="terms-label">Terms</span>' + (a.terms ? '<p>' + esc(a.terms) + '</p>' : '<p class="muted">We are adding the terms for this offer. You can accept it once they are here. Questions? Text ' + PHONE + '.</p>') + '</div>'
+        return '<div class="offer"><div class="head"><b>' + esc(a.lender) + (a.product ? ' · ' + esc(a.product) : '') + '</b><span class="pill">Round ' + a.round + '</span></div><div class="amt">' + money(a.approved_amt) + '</div>' + (a.charge_card ? '<p class="muted">Charge card. Each charge card counts as ' + money(CHARGE_CARD_AMT) + ' toward your funding.</p>' : '') + '<div class="terms"><span class="terms-label">Terms</span>' + (a.terms ? '<p>' + esc(a.terms) + '</p>' : '<p class="muted">We are adding the terms for this offer. You can accept it once they are here. Questions? Text ' + PHONE + '.</p>') + '</div>'
           + '<div class="acts">' + (a.terms ? '<button class="btn primary" data-decide="accepted" data-id="' + a.id + '" data-amt="' + money(a.approved_amt) + '">Accept this offer</button>' : '') + '<button class="btn" data-decide="rejected" data-id="' + a.id + '" data-amt="' + money(a.approved_amt) + '">No thanks</button></div></div>';
       }).join('') + '</section>' : '')
       + '<section class="card"><h2>Your progress</h2>' + (d.stage === 0 ? '<span class="pill bad" style="align-self:flex-start">File closed</span>' : stepper(d, offers)) + '</section>'
       + (F.rounds.length ? '<section class="stack"><h2 class="sect">Where we applied</h2>' + F.rounds.map(function (r) {
-        return '<details class="round"' + (r.round === lastR ? ' open' : '') + '><summary><b>Round ' + r.round + '</b><span>' + money(r.accepted) + ' accepted</span></summary>' + r.apps.map(function (a) {
-          return '<div class="row"><div><b>' + esc(a.lender) + '</b><small>' + esc(a.product || '') + (a.product ? ' · ' : '') + esc(bureauLine(a)) + '</small>' + (a.status === 'approved' && a.terms ? '<details class="view-terms"><summary>View terms</summary><p>' + esc(a.terms) + '</p></details>' : '') + '</div><div class="right">' + (a.status === 'approved' ? '<b>' + money(a.approved_amt) + '</b>' : '') + pill(a) + '</div></div>';
-        }).join('') + (r.fee > 0 ? '<div class="fee"><span>Fee for this round (' + F.pct + '%): <b>' + money(r.fee) + '</b></span>' + (r.paid ? '<span class="pill good">Paid</span>' : '<span class="pill warn">Due</span>') + '</div>' : '') + '</details>';
+        return '<details class="round"' + (r.round === lastR ? ' open' : '') + '><summary><b>Round ' + r.round + '</b><span>' + money(r.accepted) + ' approved' + (r.pending ? ' · ' + r.pending + ' pending' : '') + '</span></summary>' + appGroups(r.apps).map(function (g) { return '<h3 class="grp">' + g.label + ' <span>(' + g.apps.length + ')</span></h3>' + g.apps.map(function (a) {
+          return '<div class="row"><div><b>' + esc(a.lender) + '</b><small>' + (a.charge_card ? 'Charge card · ' : '') + esc(a.product || '') + (a.product ? ' · ' : '') + esc(bureauLine(a)) + '</small>' + (a.status === 'approved' && a.terms ? '<details class="view-terms"><summary>View terms</summary><p>' + esc(a.terms) + '</p></details>' : '') + '</div><div class="right">' + (a.status === 'approved' ? '<b>' + money(a.approved_amt) + '</b>' : '') + pill(a) + '</div></div>';
+        }).join(''); }).join('') + (r.fee > 0 ? '<div class="fee"><span>Fee for this round (' + F.pct + '%): <b>' + money(r.fee) + '</b></span>' + (r.paid ? '<span class="pill good">Paid</span>' : '<span class="pill warn">Due</span>') + '</div>' : '') + '</details>';
       }).join('') + '</section><section class="card"><h2>Credit inquiries</h2><p class="muted">One for each hard pull, approved or denied.</p><div class="tiles">' + ['EX', 'EQ', 'TU'].map(function (b) { return '<div class="tile"><span>' + BUREAU[b] + '</span><b>' + F.inquiries[b] + '</b></div>'; }).join('') + '</div></section>' : '');
   }
   function load() {
@@ -208,7 +209,7 @@
     else if (t.id === 'logout') sb.auth.signOut().then(function () { showLogin(); });
     else if (t.getAttribute && t.getAttribute('data-decide')) {
       var dec = t.getAttribute('data-decide'), amt = t.getAttribute('data-amt');
-      if (!window.confirm(dec === 'accepted' ? 'Accept this ' + amt + ' offer on the terms shown? It will be added to your total, and our fee applies to it.' : 'Pass on this ' + amt + ' offer?')) return;
+      if (!window.confirm(dec === 'accepted' ? 'Accept this ' + amt + ' offer on the terms shown? It stays in your total, and our fee applies to it.' : 'Pass on this ' + amt + ' offer? It will be removed from your total, and no fee applies to it.')) return;
       t.disabled = true;
       sb.auth.getSession().then(function (r) { return clientApi({ action: 'decide', id: +t.getAttribute('data-id'), decision: dec }, r.data.session.access_token); }).then(function () { last = ''; return load(); }).catch(function (x) { t.disabled = false; window.alert(x.message); });
     }

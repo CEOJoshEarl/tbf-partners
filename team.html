@@ -148,10 +148,11 @@
       sb.from('deal_applications').select('*').order('round').order('created_at'),
       sb.from('round_payments').select('*'),
       sb.from('partners').select('*').order('created_at', { ascending: false }),
-      sb.from('news').select('*').order('created_at', { ascending: false })
+      sb.from('news').select('*').order('created_at', { ascending: false }),
+      sb.from('deal_messages').select('*').order('created_at', { ascending: false })
     ]).then(function (x) {
       x.forEach(function (r) { if (r.error) throw r.error; });
-      S.deals = x[0].data || []; S.apps = x[1].data || []; S.pays = x[2].data || []; S.partners = (x[3].data || []).filter(function (p) { return p.role !== 'team'; }); S.news = x[4].data || [];
+      S.deals = x[0].data || []; S.apps = x[1].data || []; S.pays = x[2].data || []; S.partners = (x[3].data || []).filter(function (p) { return p.role !== 'team'; }); S.news = x[4].data || []; S.messages = x[5].data || [];
       S.teamAll = x[3].data || [];
     });
   }
@@ -230,6 +231,7 @@
     return '<a class="back" href="#deals">‹ All clients</a><div class="head"><div><h1>' + esc(dealName(d)) + '</h1><p class="sub">' + esc(d.product || 'Product not set') + ' · ' + esc(partnerName(d.partner_code)) + '</p></div><div>' + stagePill(d) + '</div></div>'
       + '<div class="stats"><div class="stat"><span>Approved total</span><b>' + money(F.accepted) + '</b><small>Counts until the client passes</small></div><div class="stat"><span>Client passed</span><b>' + money(F.passed) + '</b>' + (F.pending ? '<small>' + F.pending + ' pending with lenders</small>' : '') + '</div><div class="stat"><span>Partner commission</span><b>' + money(d.commission) + '</b>' + (estFor(d, F) ? '<small>' + money(estFor(d, F)) + ' estimated</small>' : '') + '</div><div class="stat"><span>Fees collected</span><b>' + money(d.collected_fee) + '</b></div></div>'
       + '<div class="file"><div class="stack"><section class="card"><div class="head"><h2>Applications</h2><button class="btn primary" data-a="add-app">Add application</button></div><div class="tiles"><div class="tile"><span>Experian inquiries</span><b>' + F.inquiries.EX + '</b></div><div class="tile"><span>Equifax inquiries</span><b>' + F.inquiries.EQ + '</b></div><div class="tile"><span>TransUnion inquiries</span><b>' + F.inquiries.TU + '</b></div></div>' + (rounds || '<p class="empty">No applications yet. Add the first one when you apply.</p>') + '</section>'
+      + (S.messages.some(function (m) { return m.deal_id === d.id; }) ? '<section class="card"><h2>Messages from the client</h2>' + S.messages.filter(function (m) { return m.deal_id === d.id; }).map(function (m) { return '<div class="note">' + esc(m.body) + '<small>' + date(m.created_at) + '</small></div>'; }).join('') + '</section>' : '')
       + '<section class="card"><h2>Notes</h2><form class="inline" id="f-note"><div class="field"><label for="n">Note (the partner can see this)</label><input id="n" name="text" required></div><button class="btn">Add</button></form>' + notes.map(function (n) { return '<div class="note">' + esc(n.text) + '<small>' + esc(n.by) + ' · ' + date(n.at) + '</small></div>'; }).join('') + '</section></div>'
       + '<div class="stack"><section class="card"><h2>Move this file</h2><div class="field"><label for="st">Stage</label><select id="st">' + [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0].map(function (n) { return '<option value="' + n + '"' + (n === d.stage ? ' selected' : '') + '>' + (n ? n + ' - ' : '') + STAGES[n] + '</option>'; }).join('') + '</select></div>'
       + (d.stage === 0 ? '<div class="field"><label for="lr">Reason (the partner can see this)</label><input id="lr" value="' + esc(d.loss_reason) + '"></div>' : '')

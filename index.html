@@ -1,6 +1,10 @@
 <!doctype html>
 <html lang="en">
 <meta charset="utf-8">
+<!-- Security policy: only these sites may run code, style or be called from this page. GitHub Pages cannot send headers, so it lives here.
+     If you add a script, font or API from a new site, add that site here or the page will block it. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src https://btufjscchoolcaevvzlx.supabase.co wss://btufjscchoolcaevvzlx.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
 <link rel="icon" type="image/png" sizes="512x512" href="img/favicon-512.png">
 <link rel="apple-touch-icon" href="img/favicon-180.png">
@@ -284,7 +288,7 @@
 <dialog id="drawer"></dialog>
 <div class="toast" id="toast" hidden role="status"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js" integrity="sha384-0w2KAL2YHP6wKOkUDzkCDGgVvfmHnj02DHeQ6XcHOgTfFsGyonKOpShMH1x6nk9o" crossorigin="anonymous"></script>
 <script src="shared.js"></script>
 <script>
 (function () {
@@ -984,7 +988,7 @@
   document.addEventListener('submit', function (e) {
     e.preventDefault();
     var f = e.target, kind = f.getAttribute('data-form'), d;
-    if (kind === 'login') { sb.auth.signInWithPassword({ email: f.email.value.trim().toLowerCase(), password: f.password.value }).then(function (r) { if (r.error) { showLoginErr('That email and password do not match.'); return; } return enter(); }).catch(function () { showLoginErr('We could not log you in. Please text us.'); }); return; }
+    if (kind === 'login') { sb.auth.signInWithPassword({ email: f.email.value.trim().toLowerCase(), password: f.password.value }).then(function (r) { if (r.error) { showLoginErr(/not confirmed/i.test(r.error.message || '') ? 'Please confirm your email first. Click "Set your password" below and we will email you a code.' : 'That email and password do not match.'); return; } return enter(); }).catch(function () { showLoginErr('We could not log you in. Please text us.'); }); return; }
     if (kind === 'newpass') { if (f.password.value.length < 10) { showLoginErr('Please use at least 10 characters.'); return; } sb.auth.updateUser({ password: f.password.value }).then(function (r) { if (r.error) { showLoginErr('That did not save. Please try the link again.'); return; } return enter(); }); return; }
     if (kind === 'lead') {
       if (!validLead(f)) return;
